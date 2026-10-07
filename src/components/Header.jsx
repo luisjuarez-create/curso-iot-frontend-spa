@@ -6,7 +6,6 @@ export function Header({
   status,
   packetCount,
   onOpenDeviceModal,
-  onOpenAddWidgetModal,
 }) {
   const getStatusDot = () => {
     switch (status) {
@@ -56,22 +55,11 @@ export function Header({
           </button>
         </div>
 
-        {/* Packets count (Solo Desktop) */}
-        <div className="hidden md:flex items-center gap-1.5 text-xs text-slate-400 bg-slate-800/40 px-2.5 py-1 rounded-lg border border-slate-800">
+        {/* Packets count */}
+        <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 bg-slate-800/40 px-2.5 py-1 rounded-lg border border-slate-800">
           <Activity className="w-3.5 h-3.5 text-cyan-400" />
           <span>{packetCount} msgs</span>
         </div>
-      </div>
-
-      {/* Action Buttons (En móvil se eliminan duplicados; solo botón en desktop) */}
-      <div className="hidden lg:flex items-center gap-2">
-        <button
-          onClick={onOpenAddWidgetModal}
-          className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition"
-        >
-          <Plus className="w-4 h-4 stroke-[2.5]" />
-          <span>Nuevo Widget</span>
-        </button>
       </div>
     </header>
   )

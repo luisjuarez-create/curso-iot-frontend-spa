@@ -1,6 +1,6 @@
 import React from 'react'
 import { WidgetContainer } from './WidgetContainer.jsx'
-import { Plus, LayoutGrid, Sparkles, Link2, X } from 'lucide-react'
+import { Plus, LayoutGrid, Sparkles, Link2, X, Trash2 } from 'lucide-react'
 
 export function CanvasGrid({
   widgets,
@@ -28,7 +28,7 @@ export function CanvasGrid({
   }
 
   return (
-    <main className="flex-1 w-full lg:w-[80%] bg-slate-950 p-3 sm:p-6 pb-6 overflow-y-auto">
+    <main className="flex-1 w-full lg:w-[75%] bg-slate-950 p-3 sm:p-5 pb-6 overflow-y-auto">
       {/* Banner de Modo Vinculación Activo */}
       {bindingVariable && (
         <div className="mb-4 p-3 bg-emerald-950/80 border-2 border-emerald-500/60 rounded-2xl flex items-center justify-between shadow-xl shadow-emerald-950/50 backdrop-blur animate-in fade-in slide-in-from-top-2 duration-200">
@@ -56,13 +56,14 @@ export function CanvasGrid({
         </div>
       )}
 
-      {/* Canvas Top Bar */}
-      <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-900">
+      {/* Canvas Top Bar: Fila única compacta solo con indicador y botones */}
+      <div className="flex items-center justify-between pb-2 mb-3.5 border-b border-slate-900/80">
         <div className="flex items-center gap-2">
-          <LayoutGrid className="w-4 h-4 text-emerald-400" />
-          <h2 className="text-sm font-bold text-slate-200">Lienzo de Monitoreo</h2>
-          <span className="text-xs text-slate-500 font-mono">
-            ({widgets.length} {widgets.length === 1 ? 'widget' : 'widgets'})
+          <div className="w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+            <LayoutGrid className="w-3.5 h-3.5" />
+          </div>
+          <span className="text-xs font-mono font-semibold text-slate-300 bg-slate-900 border border-slate-800 px-2.5 py-0.5 rounded-lg whitespace-nowrap shadow-inner">
+            {widgets.length} {widgets.length === 1 ? 'widget' : 'widgets'}
           </span>
         </div>
 
@@ -70,18 +71,22 @@ export function CanvasGrid({
           {widgets.length > 0 && (
             <button
               onClick={onClearAll}
-              className="text-xs text-slate-500 hover:text-rose-400 transition px-2 py-1"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-medium text-slate-400 hover:text-rose-400 bg-slate-900/80 hover:bg-rose-950/20 border border-slate-800 hover:border-rose-500/40 transition active:scale-95 whitespace-nowrap shadow-sm"
+              title="Eliminar todos los widgets del lienzo"
             >
-              Limpiar Lienzo
+              <Trash2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Limpiar Lienzo</span>
+              <span className="sm:hidden">Limpiar</span>
             </button>
           )}
-          {/* Botón en top bar visible a partir de sm (en móvil se usa el footer docked) */}
+
           <button
             onClick={onOpenAddWidgetModal}
-            className="hidden sm:flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition"
+            className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs px-3 py-1 rounded-xl shadow-md shadow-emerald-500/20 active:scale-95 transition whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5 stroke-[3]" />
-            <span>Nuevo Widget</span>
+            <span className="hidden sm:inline">+ Nuevo Widget</span>
+            <span className="sm:hidden">+ Widget</span>
           </button>
         </div>
       </div>

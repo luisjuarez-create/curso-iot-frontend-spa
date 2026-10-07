@@ -237,21 +237,20 @@ export default function App() {
         status={status}
         packetCount={packetCount}
         onOpenDeviceModal={() => setIsDeviceModalOpen(true)}
-        onOpenAddWidgetModal={() => setIsAddWidgetModalOpen(true)}
         onOpenMobileDrawer={() => setIsMobileDrawerOpen(true)}
         variablesCount={variablesCount}
       />
 
-      {/* Main Two-Panel Content: 20% Left (Desktop), 80% Right (Canvas) */}
+      {/* Main Two-Panel Content: 25% Left (Desktop), 75% Right (Canvas) */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-        {/* Left 20% Panel (Only visible on Desktop) */}
+        {/* Left 25% Panel (Only visible on Desktop) */}
         <VariablesPanel
           variables={variables}
           deviceId={deviceId}
           status={status}
         />
 
-        {/* Right 80% Panel (Full width on Mobile) */}
+        {/* Right 75% Panel (Full width on Mobile) */}
         <CanvasGrid
           widgets={widgets}
           variables={variables}
