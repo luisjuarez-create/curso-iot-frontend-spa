@@ -17,6 +17,7 @@ export function DeviceModal({
     { id: '002130123', label: 'Laboratorio A' },
     { id: '002130124', label: 'Cámara Fría' },
     { id: '002130125', label: 'Invernadero' },
+    { id: '002130126', label: 'ESP32-C6 DevKit' },
   ]
 
   const handleSubmit = (e) => {
@@ -63,7 +64,7 @@ export function DeviceModal({
               type="text"
               value={deviceId}
               onChange={(e) => setDeviceId(e.target.value)}
-              placeholder="Ej. 002130123"
+              placeholder="Ej. 002130126"
               required
               className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
             />
@@ -78,7 +79,7 @@ export function DeviceModal({
             <span className="block text-[11px] font-medium text-slate-400 mb-1.5 uppercase tracking-wider">
               Dispositivos de Prueba Disponibles:
             </span>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {presets.map((p) => (
                 <button
                   type="button"
