@@ -139,7 +139,7 @@ export default function App() {
   }, [widgets])
 
   // MQTT Hook
-  const { status, variables, packetCount } = useMqtt(brokerUrl, deviceId)
+  const { status, deviceStatus, lastSeenText, variables, packetCount } = useMqtt(brokerUrl, deviceId)
 
   // Handlers
   const handleSaveDevice = ({ deviceId: newId, brokerUrl: newBroker }) => {
@@ -238,6 +238,8 @@ export default function App() {
       <Header
         deviceId={deviceId}
         status={status}
+        deviceStatus={deviceStatus}
+        lastSeenText={lastSeenText}
         packetCount={packetCount}
         onOpenDeviceModal={() => setIsDeviceModalOpen(true)}
         onOpenMobileDrawer={() => setIsMobileDrawerOpen(true)}
@@ -286,8 +288,8 @@ export default function App() {
           onClick={() => setIsAddWidgetModalOpen(true)}
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/20 active:scale-95 transition"
         >
-          <Plus className="w-4 h-4 stroke-[3]" />
-          <span>+ Widget</span>
+          <Plus className="w-4 h-4 stroke-[2.5]" />
+          <span>Nuevo Widget</span>
         </button>
       </footer>
 

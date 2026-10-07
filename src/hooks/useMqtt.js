@@ -3,17 +3,64 @@ import mqtt from 'mqtt'
 
 export function useMqtt(brokerUrl, deviceId) {
   const [status, setStatus] = useState('disconnected') // 'disconnected' | 'connecting' | 'connected' | 'error'
+  const [deviceStatus, setDeviceStatus] = useState('waiting') // 'waiting' | 'online' | 'idle' | 'offline' | 'no_broker'
+  const [lastSeenText, setLastSeenText] = useState('Sin datos')
   const [variables, setVariables] = useState({})
   const [packetCount, setPacketCount] = useState(0)
   const [lastPacketTime, setLastPacketTime] = useState(null)
   const clientRef = useRef(null)
 
-  // Reset variables when deviceId changes
+  // Reset variables and status when deviceId changes
   useEffect(() => {
     setVariables({})
     setPacketCount(0)
     setLastPacketTime(null)
+    setDeviceStatus('waiting')
+    setLastSeenText('Sin datos')
   }, [deviceId])
+
+  // Watchdog de presencia del dispositivo (evalúa cada segundo la inactividad)
+  useEffect(() => {
+    const checkPresence = () => {
+      if (status !== 'connected') {
+        setDeviceStatus('no_broker')
+        setLastSeenText('Broker desconectado')
+        return
+      }
+
+      if (!lastPacketTime || packetCount === 0) {
+        setDeviceStatus('waiting')
+        setLastSeenText('Esperando datos')
+        return
+      }
+
+      const diffSec = Math.floor((Date.now() - lastPacketTime.getTime()) / 1000)
+
+      let seenStr = ''
+      if (diffSec < 5) seenStr = 'ahora'
+      else if (diffSec < 60) seenStr = `hace ${diffSec}s`
+      else if (diffSec < 3600) seenStr = `hace ${Math.floor(diffSec / 60)}m`
+      else seenStr = `hace ${Math.floor(diffSec / 3600)}h`
+
+      setLastSeenText(seenStr)
+
+      // Reglas de estado de presencia en tiempo real:
+      // < 15s  -> Online (Verde)
+      // 15-45s -> Idle / Inactivo (Ámbar)
+      // > 45s  -> Offline / Fuera de línea (Rojo)
+      if (diffSec < 15) {
+        setDeviceStatus('online')
+      } else if (diffSec < 45) {
+        setDeviceStatus('idle')
+      } else {
+        setDeviceStatus('offline')
+      }
+    }
+
+    checkPresence()
+    const interval = setInterval(checkPresence, 1000)
+    return () => clearInterval(interval)
+  }, [status, lastPacketTime, packetCount])
 
   useEffect(() => {
     if (!brokerUrl || !deviceId) {
@@ -68,8 +115,15 @@ export function useMqtt(brokerUrl, deviceId) {
         const data = JSON.parse(payloadStr)
         const now = new Date()
 
+        // Si el payload notifica estado explícito (ej. LWT de MQTT)
+        if (data.estado === 'OFFLINE') {
+          setDeviceStatus('offline')
+          return
+        }
+
         setPacketCount((prev) => prev + 1)
         setLastPacketTime(now)
+        setDeviceStatus('online')
 
         setVariables((prevVars) => {
           const updated = { ...prevVars }
@@ -138,6 +192,8 @@ export function useMqtt(brokerUrl, deviceId) {
 
   return {
     status,
+    deviceStatus,
+    lastSeenText,
     variables,
     packetCount,
     lastPacketTime,
