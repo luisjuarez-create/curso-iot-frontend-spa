@@ -29,9 +29,6 @@ export function BarChartWidget({ variable, settings = {} }) {
           </span>
           <span className="text-xs font-bold text-slate-400 font-mono">{variable.unit}</span>
         </div>
-        <span className="text-[10px] font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
-          Barras Históricas
-        </span>
       </div>
 
       {/* Bar Chart Area */}

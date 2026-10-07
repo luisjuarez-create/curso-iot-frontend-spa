@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Cpu, Server, Check, HelpCircle, X } from 'lucide-react'
+import { Cpu, Check, HelpCircle, X } from 'lucide-react'
 
 export function DeviceModal({
   isOpen,
@@ -10,7 +10,6 @@ export function DeviceModal({
   canClose = true
 }) {
   const [deviceId, setDeviceId] = useState(currentDeviceId || '002130123')
-  const [brokerUrl, setBrokerUrl] = useState(currentBrokerUrl || 'ws://100.48.65.94:9001')
 
   if (!isOpen) return null
 
@@ -25,7 +24,7 @@ export function DeviceModal({
     if (!deviceId.trim()) return
     onSave({
       deviceId: deviceId.trim(),
-      brokerUrl: brokerUrl.trim()
+      brokerUrl: currentBrokerUrl
     })
   }
 
@@ -68,9 +67,9 @@ export function DeviceModal({
               required
               className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
             />
-            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-              <HelpCircle className="w-3 h-3 text-emerald-400" />
-              Se escuchará el tópico: <span className="font-mono text-emerald-400">devices/{deviceId || '{id}'}/#</span>
+            <p className="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1">
+              <HelpCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              Se escuchará el tópico: <span className="font-mono text-emerald-400 font-semibold">devices/{deviceId || '{id}'}/#</span>
             </p>
           </div>
 
@@ -96,25 +95,6 @@ export function DeviceModal({
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* Broker URL Input */}
-          <div className="pt-2 border-t border-slate-800/80">
-            <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <Server className="w-3.5 h-3.5 text-slate-400" />
-              URL WebSocket del Broker Mosquitto
-            </label>
-            <input
-              type="text"
-              value={brokerUrl}
-              onChange={(e) => setBrokerUrl(e.target.value)}
-              placeholder="ws://100.48.65.94:9001"
-              required
-              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-300 focus:outline-none focus:border-emerald-500 transition"
-            />
-            <span className="text-[10px] text-slate-400 block mt-1">
-              Broker en AWS EC2 (Puerto 9001 para WebSockets)
-            </span>
           </div>
 
           {/* Submit Button */}
