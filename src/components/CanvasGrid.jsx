@@ -24,20 +24,8 @@ export function CanvasGrid({
     onReorderWidgets(updated)
   }
 
-  const handleMove = (id, direction) => {
-    const currentIndex = widgets.findIndex((w) => w.id === id)
-    if (currentIndex === -1) return
-    const targetIndex = currentIndex + direction
-    if (targetIndex < 0 || targetIndex >= widgets.length) return
-
-    const updated = [...widgets]
-    const [moved] = updated.splice(currentIndex, 1)
-    updated.splice(targetIndex, 0, moved)
-    onReorderWidgets(updated)
-  }
-
   return (
-    <main className="flex-1 w-full lg:w-[80%] bg-slate-950 p-6 overflow-y-auto h-[calc(100vh-4rem)]">
+    <main className="flex-1 w-full lg:w-[80%] bg-slate-950 p-3.5 sm:p-6 pb-28 lg:pb-6 overflow-y-auto h-[calc(100vh-4rem)]">
       {/* Canvas Top Bar */}
       <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-900">
         <div className="flex items-center gap-2">
@@ -62,14 +50,15 @@ export function CanvasGrid({
             className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition"
           >
             <Plus className="w-3.5 h-3.5 stroke-[3]" />
-            Nuevo Widget
+            <span className="hidden sm:inline">Nuevo Widget</span>
+            <span className="sm:hidden">+ Widget</span>
           </button>
         </div>
       </div>
 
       {/* Grid or Empty State */}
       {widgets.length === 0 ? (
-        <div className="h-[72vh] flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-slate-900 rounded-3xl">
+        <div className="h-[70vh] flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-slate-900 rounded-3xl">
           <div className="w-16 h-16 rounded-3xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4 shadow-xl shadow-emerald-500/5">
             <Sparkles className="w-8 h-8" />
           </div>
@@ -77,7 +66,7 @@ export function CanvasGrid({
           <p className="text-xs text-slate-400 mt-1 max-w-md leading-relaxed">
             Puedes agregar 6 tipos de visualizaciones (Numérico, Gráfica de Líneas, Medidor Gauge,
             Barra de Nivel, Alerta LED y Barras Históricas). Redimensiona arrastrando la esquina
-            inferior derecha hacia los lados y abajo estilo AWS CloudWatch.
+            inferior derecha.
           </p>
 
           <button
@@ -89,8 +78,8 @@ export function CanvasGrid({
           </button>
         </div>
       ) : (
-        /* The Responsive Grid with Drag & Drop Reordering */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
+        /* The Responsive Grid */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 auto-rows-fr">
           {widgets.map((widget) => (
             <WidgetContainer
               key={widget.id}
@@ -99,7 +88,6 @@ export function CanvasGrid({
               onUpdateWidget={onUpdateWidget}
               onDeleteWidget={onDeleteWidget}
               onReorderWidgets={handleReorder}
-              onMoveWidget={handleMove}
               onOpenSettings={onOpenSettings}
             />
           ))}

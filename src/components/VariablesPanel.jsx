@@ -15,7 +15,7 @@ export function VariablesPanel({ variables, deviceId }) {
   }
 
   return (
-    <aside className="w-full lg:w-[20%] min-w-[210px] max-w-[270px] border-r border-slate-800 bg-slate-900/60 backdrop-blur flex flex-col h-[calc(100vh-4rem)]">
+    <aside className="hidden lg:flex w-[20%] min-w-[210px] max-w-[270px] border-r border-slate-800 bg-slate-900/60 backdrop-blur flex-col h-[calc(100vh-4rem)]">
       {/* Panel Header */}
       <div className="p-3 border-b border-slate-800 space-y-2">
         <div className="flex items-center justify-between">

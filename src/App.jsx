@@ -5,7 +5,9 @@ import { CanvasGrid } from './components/CanvasGrid.jsx'
 import { DeviceModal } from './components/DeviceModal.jsx'
 import { AddWidgetModal } from './components/AddWidgetModal.jsx'
 import { WidgetSettingsModal } from './components/WidgetSettingsModal.jsx'
+import { MobileVariablesDrawer } from './components/MobileVariablesDrawer.jsx'
 import { useMqtt } from './hooks/useMqtt.js'
+import { Layers, Plus, Radio } from 'lucide-react'
 
 export default function App() {
   // Device & Broker Config
@@ -21,7 +23,8 @@ export default function App() {
     return !localStorage.getItem('cidesi_iot_device_id')
   })
   const [isAddWidgetModalOpen, setIsAddWidgetModalOpen] = useState(false)
-  const [settingsWidget, setSettingsWidget] = useState(null) // widget being configured
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
+  const [settingsWidget, setSettingsWidget] = useState(null)
 
   // Widgets state (persisted in localStorage)
   const [widgets, setWidgets] = useState(() => {
@@ -194,11 +197,20 @@ export default function App() {
     setWidgets(reordered)
   }
 
+  const handleBindVariableToWidget = (widgetId, varKey) => {
+    handleUpdateWidget(widgetId, {
+      variableKey: varKey,
+      title: varKey.toUpperCase(),
+    })
+  }
+
   const handleClearAll = () => {
     if (window.confirm('¿Deseas eliminar todos los widgets del lienzo?')) {
       setWidgets([])
     }
   }
+
+  const variablesCount = Object.keys(variables).length
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
@@ -209,18 +221,20 @@ export default function App() {
         packetCount={packetCount}
         onOpenDeviceModal={() => setIsDeviceModalOpen(true)}
         onOpenAddWidgetModal={() => setIsAddWidgetModalOpen(true)}
+        onOpenMobileDrawer={() => setIsMobileDrawerOpen(true)}
+        variablesCount={variablesCount}
       />
 
-      {/* Main Two-Panel Content: 20% Left (Variables), 80% Right (Canvas) */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* Left 20% Panel */}
+      {/* Main Two-Panel Content: 20% Left (Desktop), 80% Right (Canvas) */}
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+        {/* Left 20% Panel (Only visible on Desktop) */}
         <VariablesPanel
           variables={variables}
           deviceId={deviceId}
           status={status}
         />
 
-        {/* Right 80% Panel */}
+        {/* Right 80% Panel (Full width on Mobile) */}
         <CanvasGrid
           widgets={widgets}
           variables={variables}
@@ -231,9 +245,33 @@ export default function App() {
           onOpenSettings={(w) => setSettingsWidget(w)}
           onClearAll={handleClearAll}
         />
+
+        {/* Floating Action Bar for Mobile Devices */}
+        <div className="lg:hidden fixed bottom-4 inset-x-4 z-30 flex items-center justify-center pointer-events-none">
+          <div className="bg-slate-900/90 border border-slate-800 shadow-2xl backdrop-blur-md rounded-2xl p-1.5 flex items-center gap-2 pointer-events-auto">
+            <button
+              onClick={() => setIsMobileDrawerOpen(true)}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700/80 transition active:scale-95 shadow-inner"
+            >
+              <Layers className="w-4 h-4 text-emerald-400" />
+              <span>Ver Variables</span>
+              <span className="font-mono text-[11px] px-1.5 py-0.2 rounded-full bg-slate-950 text-emerald-400">
+                {variablesCount}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setIsAddWidgetModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/20 active:scale-95 transition"
+            >
+              <Plus className="w-4 h-4 stroke-[3]" />
+              <span>+ Widget</span>
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Modals */}
+      {/* Modals & Drawers */}
       <DeviceModal
         isOpen={isDeviceModalOpen}
         currentDeviceId={deviceId}
@@ -254,6 +292,16 @@ export default function App() {
         widget={settingsWidget}
         onClose={() => setSettingsWidget(null)}
         onSave={handleUpdateWidget}
+      />
+
+      {/* Mobile Bottom Sheet Drawer */}
+      <MobileVariablesDrawer
+        isOpen={isMobileDrawerOpen}
+        onClose={() => setIsMobileDrawerOpen(false)}
+        variables={variables}
+        deviceId={deviceId}
+        widgets={widgets}
+        onBindVariableToWidget={handleBindVariableToWidget}
       />
     </div>
   )

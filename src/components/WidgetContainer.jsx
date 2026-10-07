@@ -10,9 +10,7 @@ import {
   Gauge,
   Droplets,
   ShieldAlert,
-  BarChart2,
-  ChevronLeft,
-  ChevronRight
+  BarChart2
 } from 'lucide-react'
 
 import { NumericWidgetView } from './widgets/NumericWidgetView.jsx'
@@ -28,7 +26,6 @@ export function WidgetContainer({
   onUpdateWidget,
   onDeleteWidget,
   onReorderWidgets,
-  onMoveWidget,
   onOpenSettings,
 }) {
   const [isDragOverVariable, setIsDragOverVariable] = useState(false)
@@ -50,7 +47,6 @@ export function WidgetContainer({
     e.preventDefault()
     e.dataTransfer.dropEffect = 'move'
 
-    // Detectar si lo que se arrastra es variable o widget
     const types = e.dataTransfer.types
     if (types.includes('application/x-widget-id') || types.includes('text/plain')) {
       setIsDragOverWidget(true)
@@ -77,7 +73,7 @@ export function WidgetContainer({
         onReorderWidgets(draggedWidgetId, widget.id)
       }
     } else if (textData) {
-      // Vincular variable del panel izquierdo
+      // Vincular variable del panel izquierdo o mobile drawer
       const varKey = textData.replace('variable:', '')
       onUpdateWidget(widget.id, {
         variableKey: varKey,
@@ -90,7 +86,6 @@ export function WidgetContainer({
   const handleWidgetDragStart = (e) => {
     setIsDraggingSelf(true)
     e.dataTransfer.effectAllowed = 'move'
-    // IMPORTANTE: text/plain es obligatorio en navegadores modernos para no abortar el drag
     e.dataTransfer.setData('text/plain', `widget:${widget.id}`)
     e.dataTransfer.setData('widget-id', widget.id)
     e.dataTransfer.setData('application/x-widget-id', widget.id)
@@ -104,12 +99,11 @@ export function WidgetContainer({
     setIsDraggingSelf(false)
   }
 
-  // 3. REDIMENSIONAMIENTO BIDIRECCIONAL ROBUSTO ESTILO AWS CLOUDWATCH
+  // 3. REDIMENSIONAMIENTO BIDIRECCIONAL ESTILO AWS CLOUDWATCH
   const handleResizePointerDown = (e) => {
     e.preventDefault()
     e.stopPropagation()
 
-    // Capturar el puntero para que no se pierda la referencia aunque salga del marco
     try {
       e.target.setPointerCapture(e.pointerId)
     } catch (err) {
@@ -123,7 +117,6 @@ export function WidgetContainer({
     const currentCol = widget.colSpan || 1
     const currentRow = widget.rowSpan || 1
 
-    // Ancho por columna base y alto por fila base
     const colWidth = Math.max(rect.width / currentCol, 80)
     const rowHeight = Math.max(rect.height / currentRow, 140)
 
@@ -152,11 +145,11 @@ export function WidgetContainer({
     const diffX = e.clientX - startX
     const diffY = e.clientY - startY
 
-    // Calcular cambio en columnas (1 a 4)
+    // Columnas (1 a 4)
     const colStep = Math.round(diffX / (colWidth * 0.7))
     const newColSpan = Math.max(1, Math.min(4, initialColSpan + colStep))
 
-    // Calcular cambio en filas (1 a 3)
+    // Filas (1 a 3)
     const rowStep = Math.round(diffY / (rowHeight * 0.7))
     const newRowSpan = Math.max(1, Math.min(3, initialRowSpan + rowStep))
 
@@ -173,7 +166,7 @@ export function WidgetContainer({
     try {
       e.target.releasePointerCapture(e.pointerId)
     } catch (err) {
-      // Ignorar si ya se solto
+      // Ignorar
     }
 
     const finalCols = resizeStateRef.current?.lastColSpan || widget.colSpan || 1
@@ -183,7 +176,6 @@ export function WidgetContainer({
     setResizePreview(null)
     resizeStateRef.current = null
 
-    // Guardar tamano final en el estado y en localStorage
     onUpdateWidget(widget.id, {
       colSpan: finalCols,
       rowSpan: finalRows,
@@ -210,9 +202,9 @@ export function WidgetContainer({
   const getRowSpanClass = () => {
     switch (activeRowSpan) {
       case 2:
-        return 'row-span-2 min-h-[360px]'
+        return 'row-span-2 min-h-[340px]'
       case 3:
-        return 'row-span-3 min-h-[520px]'
+        return 'row-span-3 min-h-[500px]'
       default:
         return 'row-span-1 min-h-[190px]'
     }
@@ -244,11 +236,11 @@ export function WidgetContainer({
           </div>
           <span className="text-xs font-semibold text-slate-300">Arrastra una variable aquí</span>
           <p className="text-[10px] text-slate-500 mt-0.5">
-            Suelta desde el panel izquierdo para conectar
+            Suelta desde el panel o selecciona una variable abajo
           </p>
 
           {Object.keys(variables).length > 0 && (
-            <div className="mt-2.5">
+            <div className="mt-2.5 w-full max-w-xs">
               <select
                 onChange={(e) => {
                   if (e.target.value) {
@@ -259,14 +251,14 @@ export function WidgetContainer({
                   }
                 }}
                 defaultValue=""
-                className="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-slate-300 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-emerald-500 truncate"
               >
                 <option value="" disabled>
-                  o vincular variable...
+                  Seleccionar variable...
                 </option>
                 {Object.keys(variables).map((k) => (
                   <option key={k} value={k}>
-                    {k}
+                    {k} ({typeof variables[k].value === 'number' ? variables[k].value.toFixed(1) : variables[k].value} {variables[k].unit})
                   </option>
                 ))}
               </select>
@@ -321,10 +313,10 @@ export function WidgetContainer({
         </div>
       )}
 
-      {/* Widget Header con Asa de 6 puntos funcional para mover de posicion */}
+      {/* Widget Header con Asa de 6 puntos para mover de posicion */}
       <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-slate-800/60">
         <div className="flex items-center gap-1.5 min-w-0">
-          {/* Asa de 6 puntos con drag & drop totalmente funcional */}
+          {/* Asa de 6 puntos */}
           <div
             draggable
             onDragStart={handleWidgetDragStart}
@@ -351,28 +343,8 @@ export function WidgetContainer({
           </div>
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-0.5">
-          {/* Botones de movimiento rapido como alternativa al drag */}
-          {onMoveWidget && (
-            <>
-              <button
-                onClick={() => onMoveWidget(widget.id, -1)}
-                title="Mover a la izquierda"
-                className="p-1 rounded-md text-slate-500 hover:text-slate-200 hover:bg-slate-800 transition"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-              <button
-                onClick={() => onMoveWidget(widget.id, 1)}
-                title="Mover a la derecha"
-                className="p-1 rounded-md text-slate-500 hover:text-slate-200 hover:bg-slate-800 transition"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </>
-          )}
-
+        {/* Action Controls (Sin los botones < > solicitados para remover) */}
+        <div className="flex items-center gap-1">
           {/* Boton de Settings para colores y max/min */}
           <button
             onClick={() => onOpenSettings(widget)}
