@@ -9,6 +9,7 @@ export function CanvasGrid({
   onDeleteWidget,
   onReorderWidgets,
   onOpenAddWidgetModal,
+  onOpenSettings,
   onClearAll,
 }) {
   const handleReorder = (draggedId, targetId) => {
@@ -20,6 +21,18 @@ export function CanvasGrid({
     const updated = [...widgets]
     const [moved] = updated.splice(fromIndex, 1)
     updated.splice(toIndex, 0, moved)
+    onReorderWidgets(updated)
+  }
+
+  const handleMove = (id, direction) => {
+    const currentIndex = widgets.findIndex((w) => w.id === id)
+    if (currentIndex === -1) return
+    const targetIndex = currentIndex + direction
+    if (targetIndex < 0 || targetIndex >= widgets.length) return
+
+    const updated = [...widgets]
+    const [moved] = updated.splice(currentIndex, 1)
+    updated.splice(targetIndex, 0, moved)
     onReorderWidgets(updated)
   }
 
@@ -63,8 +76,8 @@ export function CanvasGrid({
           <h3 className="text-base font-bold text-slate-100">Lienzo Listo para Widgets</h3>
           <p className="text-xs text-slate-400 mt-1 max-w-md leading-relaxed">
             Puedes agregar 6 tipos de visualizaciones (Numérico, Gráfica de Líneas, Medidor Gauge,
-            Barra de Nivel, Alerta LED y Barras Históricas). Luego arrastra variables desde el panel
-            izquierdo para conectarlas.
+            Barra de Nivel, Alerta LED y Barras Históricas). Redimensiona arrastrando la esquina
+            inferior derecha hacia los lados y abajo estilo AWS CloudWatch.
           </p>
 
           <button
@@ -86,6 +99,8 @@ export function CanvasGrid({
               onUpdateWidget={onUpdateWidget}
               onDeleteWidget={onDeleteWidget}
               onReorderWidgets={handleReorder}
+              onMoveWidget={handleMove}
+              onOpenSettings={onOpenSettings}
             />
           ))}
         </div>

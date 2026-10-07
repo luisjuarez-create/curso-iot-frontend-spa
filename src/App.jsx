@@ -4,6 +4,7 @@ import { VariablesPanel } from './components/VariablesPanel.jsx'
 import { CanvasGrid } from './components/CanvasGrid.jsx'
 import { DeviceModal } from './components/DeviceModal.jsx'
 import { AddWidgetModal } from './components/AddWidgetModal.jsx'
+import { WidgetSettingsModal } from './components/WidgetSettingsModal.jsx'
 import { useMqtt } from './hooks/useMqtt.js'
 
 export default function App() {
@@ -20,14 +21,14 @@ export default function App() {
     return !localStorage.getItem('cidesi_iot_device_id')
   })
   const [isAddWidgetModalOpen, setIsAddWidgetModalOpen] = useState(false)
+  const [settingsWidget, setSettingsWidget] = useState(null) // widget being configured
 
   // Widgets state (persisted in localStorage)
   const [widgets, setWidgets] = useState(() => {
     try {
-      const saved = localStorage.getItem('cidesi_iot_widgets_v2')
+      const saved = localStorage.getItem('cidesi_iot_widgets_v3')
       if (saved) return JSON.parse(saved)
-      
-      // Muestra inicial de los distintos tipos de widgets
+
       return [
         {
           id: 'widget-kpi-temp',
@@ -35,6 +36,14 @@ export default function App() {
           title: 'TEMPERATURA ACTUAL',
           variableKey: 'temperatura',
           colSpan: 1,
+          rowSpan: 1,
+          settings: {
+            min: 18.0,
+            max: 26.0,
+            minColor: '#06b6d4',
+            normalColor: '#10b981',
+            maxColor: '#ef4444',
+          },
         },
         {
           id: 'widget-gauge-hum',
@@ -42,6 +51,14 @@ export default function App() {
           title: 'MEDIDOR DE HUMEDAD',
           variableKey: 'humedad',
           colSpan: 1,
+          rowSpan: 1,
+          settings: {
+            min: 30.0,
+            max: 80.0,
+            minColor: '#06b6d4',
+            normalColor: '#10b981',
+            maxColor: '#f59e0b',
+          },
         },
         {
           id: 'widget-level-bat',
@@ -49,13 +66,29 @@ export default function App() {
           title: 'NIVEL DE BATERÍA',
           variableKey: 'bateria',
           colSpan: 1,
+          rowSpan: 1,
+          settings: {
+            min: 3.5,
+            max: 4.2,
+            minColor: '#ef4444',
+            normalColor: '#10b981',
+            maxColor: '#10b981',
+          },
         },
         {
           id: 'widget-status-led',
           type: 'status_indicator',
-          title: 'ESTADO DE OPERACIÓN',
+          title: 'SUPERVISIÓN AMBIENTAL',
           variableKey: 'temperatura',
           colSpan: 1,
+          rowSpan: 1,
+          settings: {
+            min: 15.0,
+            max: 27.0,
+            minColor: '#38bdf8',
+            normalColor: '#10b981',
+            maxColor: '#dc2626',
+          },
         },
         {
           id: 'widget-chart-temp',
@@ -63,6 +96,14 @@ export default function App() {
           title: 'TENDENCIA EN TIEMPO REAL',
           variableKey: 'temperatura',
           colSpan: 2,
+          rowSpan: 1,
+          settings: {
+            min: 19.0,
+            max: 25.0,
+            minColor: '#06b6d4',
+            normalColor: '#22d3ee',
+            maxColor: '#ef4444',
+          },
         },
         {
           id: 'widget-bar-pres',
@@ -70,6 +111,14 @@ export default function App() {
           title: 'HISTOGRAMA DE PRESIÓN',
           variableKey: 'presion',
           colSpan: 2,
+          rowSpan: 1,
+          settings: {
+            min: 1010.0,
+            max: 1018.0,
+            minColor: '#06b6d4',
+            normalColor: '#14b8a6',
+            maxColor: '#f97316',
+          },
         },
       ]
     } catch {
@@ -79,7 +128,7 @@ export default function App() {
 
   // Persist widgets
   useEffect(() => {
-    localStorage.setItem('cidesi_iot_widgets_v2', JSON.stringify(widgets))
+    localStorage.setItem('cidesi_iot_widgets_v3', JSON.stringify(widgets))
   }, [widgets])
 
   // MQTT Hook
@@ -119,6 +168,14 @@ export default function App() {
       title: titles[widgetType] || 'NUEVO WIDGET',
       variableKey: null,
       colSpan: defaultSpans[widgetType] || 1,
+      rowSpan: 1,
+      settings: {
+        min: null,
+        max: null,
+        minColor: '#06b6d4',
+        normalColor: '#10b981',
+        maxColor: '#ef4444',
+      },
     }
     setWidgets((prev) => [...prev, newWidget])
   }
@@ -171,6 +228,7 @@ export default function App() {
           onDeleteWidget={handleDeleteWidget}
           onReorderWidgets={handleReorderWidgets}
           onOpenAddWidgetModal={() => setIsAddWidgetModalOpen(true)}
+          onOpenSettings={(w) => setSettingsWidget(w)}
           onClearAll={handleClearAll}
         />
       </div>
@@ -189,6 +247,13 @@ export default function App() {
         isOpen={isAddWidgetModalOpen}
         onClose={() => setIsAddWidgetModalOpen(false)}
         onAddWidget={handleAddWidget}
+      />
+
+      <WidgetSettingsModal
+        isOpen={Boolean(settingsWidget)}
+        widget={settingsWidget}
+        onClose={() => setSettingsWidget(null)}
+        onSave={handleUpdateWidget}
       />
     </div>
   )
