@@ -52,21 +52,23 @@ export function GaugeWidget({ variable, settings = {} }) {
             className="transition-all duration-500 ease-out"
           />
 
-          {/* Pivot Circle */}
-          <circle cx="70" cy="75" r="5" fill="#e2e8f0" />
         </svg>
 
         {/* Center Value */}
-        <div className="absolute bottom-1 flex flex-col items-center">
-          <span
-            className="text-2xl md:text-3xl font-extrabold font-mono tracking-tight leading-none transition-colors duration-300"
-            style={{ color: arcColor }}
-          >
-            {val.toFixed(1)}
-          </span>
-          <span className="text-[11px] font-bold text-slate-400 font-mono mt-0.5">
-            {variable.unit || '%'}
-          </span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center pt-3 pointer-events-none">
+          <div className="flex items-baseline gap-1">
+            <span
+              className="text-3xl md:text-4xl font-extrabold font-mono tracking-tight leading-none transition-colors duration-300"
+              style={{ color: arcColor }}
+            >
+              {typeof val === 'number' && !isNaN(val) ? val.toFixed(1) : String(val)}
+            </span>
+            {variable.unit && (
+              <span className="text-xs font-bold text-slate-400 font-mono">
+                {variable.unit}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

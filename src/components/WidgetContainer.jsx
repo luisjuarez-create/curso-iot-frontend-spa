@@ -42,17 +42,27 @@ export function WidgetContainer({
   const cardRef = useRef(null)
   const resizeStateRef = useRef(null)
 
-  const linkedVar = widget.variableKey ? variables[widget.variableKey] : null
+  const linkedVar = widget.variableKey
+    ? variables[widget.variableKey] || {
+        name: widget.variableKey,
+        value: '---',
+        unit: '',
+        history: [],
+        lastUpdated: null,
+      }
+    : null
   const settings = widget.settings || {}
 
   // 1. MANEJO DE DRAG & DROP DE VARIABLES Y REORDENAMIENTO
   const handleDragOver = (e) => {
     e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
+    e.dataTransfer.dropEffect = 'copy'
 
     const types = e.dataTransfer.types
-    if (types.includes('application/x-widget-id') || types.includes('text/plain')) {
+    if (types.includes('application/x-widget-id')) {
       setIsDragOverWidget(true)
+    } else {
+      setIsDragOverVariable(true)
     }
   }
 
@@ -66,6 +76,7 @@ export function WidgetContainer({
     setIsDragOverVariable(false)
     setIsDragOverWidget(false)
 
+    const iotVar = e.dataTransfer.getData('application/x-iot-variable')
     const textData = e.dataTransfer.getData('text/plain') || ''
     const widgetIdData = e.dataTransfer.getData('widget-id') || e.dataTransfer.getData('application/x-widget-id')
 
@@ -75,13 +86,15 @@ export function WidgetContainer({
       if (draggedWidgetId && draggedWidgetId !== widget.id) {
         onReorderWidgets(draggedWidgetId, widget.id)
       }
-    } else if (textData) {
+    } else {
       // Vincular variable del panel izquierdo o mobile drawer
-      const varKey = textData.replace('variable:', '')
-      onUpdateWidget(widget.id, {
-        variableKey: varKey,
-        title: widget.title && widget.title !== 'NUEVO WIDGET' ? widget.title : varKey.toUpperCase(),
-      })
+      const varKey = iotVar || textData.replace('variable:', '')
+      if (varKey) {
+        onUpdateWidget(widget.id, {
+          variableKey: varKey,
+          title: varKey.toUpperCase(),
+        })
+      }
     }
   }
 
@@ -355,11 +368,14 @@ export function WidgetContainer({
             {getTypeIcon()}
           </div>
 
-          <div className="min-w-0">
-            <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wide truncate">
-              {widget.title || linkedVar?.name || 'Widget'}
+          <div className="min-w-0 flex-1">
+            <h3
+              className="text-xs font-bold text-slate-200 uppercase tracking-wide truncate"
+              title={widget.title || linkedVar?.name || 'Widget'}
+            >
+              {widget.title || linkedVar?.name?.toUpperCase() || 'Widget'}
             </h3>
-            {widget.variableKey && (
+            {widget.variableKey && widget.title && !widget.title.toLowerCase().includes(widget.variableKey.toLowerCase()) && (
               <span className="text-[10px] font-mono text-emerald-400 block truncate">
                 ● {widget.variableKey}
               </span>

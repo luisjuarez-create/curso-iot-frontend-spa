@@ -10,8 +10,9 @@ export function VariablesPanel({ variables, deviceId }) {
 
   const handleDragStart = (e, variableKey) => {
     e.dataTransfer.setData('text/plain', variableKey)
+    e.dataTransfer.setData('application/x-iot-variable', variableKey)
     e.dataTransfer.setData('drag-type', 'variable')
-    e.dataTransfer.effectAllowed = 'copy'
+    e.dataTransfer.effectAllowed = 'all'
   }
 
   return (

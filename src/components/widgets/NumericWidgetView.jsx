@@ -22,42 +22,37 @@ export function NumericWidgetView({ variable, settings = {} }) {
   }
 
   return (
-    <div className="my-auto py-2">
-      <div className="flex items-baseline gap-2">
-        <span
-          className="text-4xl md:text-5xl font-extrabold font-mono tracking-tight transition-colors duration-300"
-          style={{ color: valueColor }}
-        >
-          {isNumeric
-            ? Number.isInteger(val)
-              ? val
-              : val.toFixed(2)
-            : String(variable.value)}
-        </span>
-        {variable.unit && (
-          <span className="text-lg md:text-xl font-bold text-slate-400">
-            {variable.unit}
+    <div className="flex flex-col justify-between h-full pt-1">
+      <div className="my-auto py-1">
+        <div className="flex items-baseline gap-2">
+          <span
+            className="text-4xl md:text-5xl font-extrabold font-mono tracking-tight transition-colors duration-300"
+            style={{ color: valueColor }}
+          >
+            {isNumeric
+              ? Number.isInteger(val)
+                ? val
+                : val.toFixed(2)
+              : String(variable.value)}
           </span>
-        )}
+          {variable.unit && (
+            <span className="text-lg md:text-xl font-bold text-slate-400 font-mono">
+              {variable.unit}
+            </span>
+          )}
+        </div>
       </div>
 
-      <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-        <span className="text-slate-500">
-          Último: {variable.lastUpdated ? variable.lastUpdated.toLocaleTimeString() : 'reciente'}
+      {/* Footer de una sola fila sin ocupar espacio de más */}
+      <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono border-t border-slate-800/80 pt-1.5 mt-1">
+        <span className="whitespace-nowrap">
+          {variable.lastUpdated ? variable.lastUpdated.toLocaleTimeString() : 'En vivo'}
         </span>
         {(min !== null || max !== null) && (
-          <div className="flex items-center gap-2 bg-slate-950/80 px-2 py-0.5 rounded-lg border border-slate-800">
-            {min !== null && (
-              <span className="font-medium" style={{ color: minColor }}>
-                ↓ {min.toFixed(1)}
-              </span>
-            )}
-            {min !== null && max !== null && <span className="text-slate-600">|</span>}
-            {max !== null && (
-              <span className="font-medium" style={{ color: maxColor }}>
-                ↑ {max.toFixed(1)}
-              </span>
-            )}
+          <div className="flex items-center gap-1.5 whitespace-nowrap">
+            {min !== null && <span style={{ color: minColor }}>↓ {min.toFixed(0)}</span>}
+            {min !== null && max !== null && <span className="text-slate-700">|</span>}
+            {max !== null && <span style={{ color: maxColor }}>↑ {max.toFixed(0)}</span>}
           </div>
         )}
       </div>
