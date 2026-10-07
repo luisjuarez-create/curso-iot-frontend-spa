@@ -10,17 +10,20 @@ import { useMqtt } from './hooks/useMqtt.js'
 import { Layers, Plus, Radio } from 'lucide-react'
 
 export default function App() {
-  // Device & Broker Config
+  // Device & Broker Config (reads environment variables with fallbacks)
+  const defaultDevice = import.meta.env.VITE_DEFAULT_DEVICE_ID || '002130123'
+  const defaultBroker = import.meta.env.VITE_MQTT_BROKER_URL || 'ws://100.48.65.94:9001'
+
   const [deviceId, setDeviceId] = useState(() => {
-    return localStorage.getItem('cidesi_iot_device_id') || '002130123'
+    return localStorage.getItem('cidesi_iot_device_id') || defaultDevice
   })
   const [brokerUrl, setBrokerUrl] = useState(() => {
-    return localStorage.getItem('cidesi_iot_broker_url') || 'ws://100.48.65.94:9001'
+    return localStorage.getItem('cidesi_iot_broker_url') || defaultBroker
   })
 
   // Modals state
   const [isDeviceModalOpen, setIsDeviceModalOpen] = useState(() => {
-    return !localStorage.getItem('cidesi_iot_device_id')
+    return !localStorage.getItem('cidesi_iot_device_id') && !import.meta.env.VITE_DEFAULT_DEVICE_ID
   })
   const [isAddWidgetModalOpen, setIsAddWidgetModalOpen] = useState(false)
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
