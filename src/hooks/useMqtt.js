@@ -68,12 +68,18 @@ export function useMqtt(brokerUrl, deviceId) {
       return
     }
 
+    // Safeguard Mixed Content: si la página corre en HTTPS, forzar wss:// con certificado SSL
+    let resolvedUrl = brokerUrl
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && resolvedUrl.startsWith('ws://')) {
+      resolvedUrl = 'wss://curso-iot-broker-100-48-65-94.sslip.io'
+    }
+
     setStatus('connecting')
 
     const clientId = `web-dash-${Math.random().toString(16).substring(2, 10)}`
-    console.log(`[MQTT] Conectando a ${brokerUrl} con ID ${clientId}...`)
+    console.log(`[MQTT] Conectando a ${resolvedUrl} con ID ${clientId}...`)
 
-    const client = mqtt.connect(brokerUrl, {
+    const client = mqtt.connect(resolvedUrl, {
       clientId,
       clean: true,
       connectTimeout: 5000,

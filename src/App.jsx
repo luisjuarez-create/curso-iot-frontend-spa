@@ -11,14 +11,27 @@ import { Layers, Plus, Radio } from 'lucide-react'
 
 export default function App() {
   // Device & Broker Config (reads environment variables with fallbacks)
+  const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:'
+  const defaultSecureBroker = 'wss://curso-iot-broker-100-48-65-94.sslip.io'
+  const defaultInsecureBroker = 'ws://100.48.65.94:9001'
+
   const defaultDevice = import.meta.env.VITE_DEFAULT_DEVICE_ID || '002130123'
-  const defaultBroker = import.meta.env.VITE_MQTT_BROKER_URL || 'ws://100.48.65.94:9001'
+  const defaultBroker = import.meta.env.VITE_MQTT_BROKER_URL || (isHttps ? defaultSecureBroker : defaultInsecureBroker)
 
   const [deviceId, setDeviceId] = useState(() => {
     return localStorage.getItem('cidesi_iot_device_id') || defaultDevice
   })
   const [brokerUrl, setBrokerUrl] = useState(() => {
-    return localStorage.getItem('cidesi_iot_broker_url') || defaultBroker
+    const saved = localStorage.getItem('cidesi_iot_broker_url')
+    if (saved) {
+      // Si la página se carga sobre HTTPS y el localStorage tiene ws:// inseguro, migrar a wss://
+      if (isHttps && saved.startsWith('ws://')) {
+        localStorage.setItem('cidesi_iot_broker_url', defaultSecureBroker)
+        return defaultSecureBroker
+      }
+      return saved
+    }
+    return defaultBroker
   })
 
   // Modals state
