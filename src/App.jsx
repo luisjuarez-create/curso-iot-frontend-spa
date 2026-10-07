@@ -25,6 +25,7 @@ export default function App() {
   const [isAddWidgetModalOpen, setIsAddWidgetModalOpen] = useState(false)
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
   const [settingsWidget, setSettingsWidget] = useState(null)
+  const [bindingVariable, setBindingVariable] = useState(null)
 
   // Widgets state (persisted in localStorage)
   const [widgets, setWidgets] = useState(() => {
@@ -204,6 +205,22 @@ export default function App() {
     })
   }
 
+  const handleStartBinding = (varKey) => {
+    setBindingVariable(varKey)
+    setIsMobileDrawerOpen(false)
+  }
+
+  const handleCancelBinding = () => {
+    setBindingVariable(null)
+  }
+
+  const handleSelectWidgetForBinding = (widgetId) => {
+    if (bindingVariable) {
+      handleBindVariableToWidget(widgetId, bindingVariable)
+      setBindingVariable(null)
+    }
+  }
+
   const handleClearAll = () => {
     if (window.confirm('¿Deseas eliminar todos los widgets del lienzo?')) {
       setWidgets([])
@@ -244,32 +261,33 @@ export default function App() {
           onOpenAddWidgetModal={() => setIsAddWidgetModalOpen(true)}
           onOpenSettings={(w) => setSettingsWidget(w)}
           onClearAll={handleClearAll}
+          bindingVariable={bindingVariable}
+          onCancelBinding={handleCancelBinding}
+          onSelectForBinding={handleSelectWidgetForBinding}
         />
-
-        {/* Floating Action Bar for Mobile Devices */}
-        <div className="lg:hidden fixed bottom-4 inset-x-4 z-30 flex items-center justify-center pointer-events-none">
-          <div className="bg-slate-900/90 border border-slate-800 shadow-2xl backdrop-blur-md rounded-2xl p-1.5 flex items-center gap-2 pointer-events-auto">
-            <button
-              onClick={() => setIsMobileDrawerOpen(true)}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700/80 transition active:scale-95 shadow-inner"
-            >
-              <Layers className="w-4 h-4 text-emerald-400" />
-              <span>Ver Variables</span>
-              <span className="font-mono text-[11px] px-1.5 py-0.2 rounded-full bg-slate-950 text-emerald-400">
-                {variablesCount}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setIsAddWidgetModalOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/20 active:scale-95 transition"
-            >
-              <Plus className="w-4 h-4 stroke-[3]" />
-              <span>+ Widget</span>
-            </button>
-          </div>
-        </div>
       </div>
+
+      {/* Docked Bottom Footer Bar for Mobile Devices (No overlap with widgets) */}
+      <footer className="lg:hidden h-14 bg-slate-900 border-t border-slate-800 px-4 flex items-center justify-between shrink-0 z-20 shadow-2xl">
+        <button
+          onClick={() => setIsMobileDrawerOpen(true)}
+          className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700/80 transition active:scale-95 shadow-inner"
+        >
+          <Layers className="w-4 h-4 text-emerald-400" />
+          <span>Ver Variables</span>
+          <span className="font-mono text-[11px] px-1.5 py-0.2 rounded-full bg-slate-950 text-emerald-400">
+            {variablesCount}
+          </span>
+        </button>
+
+        <button
+          onClick={() => setIsAddWidgetModalOpen(true)}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/20 active:scale-95 transition"
+        >
+          <Plus className="w-4 h-4 stroke-[3]" />
+          <span>+ Widget</span>
+        </button>
+      </footer>
 
       {/* Modals & Drawers */}
       <DeviceModal
@@ -294,14 +312,13 @@ export default function App() {
         onSave={handleUpdateWidget}
       />
 
-      {/* Mobile Bottom Sheet Drawer */}
+      {/* Mobile Bottom Sheet Drawer with One-Tap Vincular */}
       <MobileVariablesDrawer
         isOpen={isMobileDrawerOpen}
         onClose={() => setIsMobileDrawerOpen(false)}
         variables={variables}
         deviceId={deviceId}
-        widgets={widgets}
-        onBindVariableToWidget={handleBindVariableToWidget}
+        onStartBinding={handleStartBinding}
       />
     </div>
   )

@@ -10,7 +10,8 @@ import {
   Gauge,
   Droplets,
   ShieldAlert,
-  BarChart2
+  BarChart2,
+  Link2
 } from 'lucide-react'
 
 import { NumericWidgetView } from './widgets/NumericWidgetView.jsx'
@@ -27,6 +28,8 @@ export function WidgetContainer({
   onDeleteWidget,
   onReorderWidgets,
   onOpenSettings,
+  bindingVariable,
+  onSelectForBinding,
 }) {
   const [isDragOverVariable, setIsDragOverVariable] = useState(false)
   const [isDragOverWidget, setIsDragOverWidget] = useState(false)
@@ -202,11 +205,11 @@ export function WidgetContainer({
   const getRowSpanClass = () => {
     switch (activeRowSpan) {
       case 2:
-        return 'row-span-2 min-h-[340px]'
+        return 'row-span-2 min-h-[280px] lg:min-h-[340px]'
       case 3:
-        return 'row-span-3 min-h-[500px]'
+        return 'row-span-3 min-h-[420px] lg:min-h-[500px]'
       default:
-        return 'row-span-1 min-h-[190px]'
+        return 'row-span-1 min-h-[145px] sm:min-h-[165px] lg:min-h-[190px]'
     }
   }
 
@@ -290,7 +293,7 @@ export function WidgetContainer({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`rounded-2xl border transition-all duration-150 relative overflow-hidden flex flex-col justify-between p-4 select-none ${getColSpanClass()} ${getRowSpanClass()} ${
+      className={`rounded-2xl border transition-all duration-150 relative overflow-hidden flex flex-col justify-between p-3.5 sm:p-4 select-none ${getColSpanClass()} ${getRowSpanClass()} ${
         isDraggingSelf
           ? 'opacity-30 border-dashed border-emerald-400 scale-[0.98]'
           : isDragOverWidget
@@ -302,6 +305,27 @@ export function WidgetContainer({
           : 'border-slate-800/90 bg-slate-900/90 hover:border-slate-700/80 shadow-lg'
       }`}
     >
+      {/* Overlay Interactivo: Tocar para Vincular (Mobile & Desktop) */}
+      {bindingVariable && (
+        <div
+          onClick={(e) => {
+            e.stopPropagation()
+            onSelectForBinding(widget.id)
+          }}
+          className="absolute inset-0 bg-slate-950/85 backdrop-blur-[2px] border-2 border-dashed border-emerald-400 rounded-2xl z-40 flex flex-col items-center justify-center cursor-pointer p-3 text-center transition active:scale-95 group hover:bg-emerald-950/80 animate-in fade-in duration-150"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 mb-2 group-hover:scale-110 group-hover:bg-emerald-500/30 transition shadow-lg shadow-emerald-500/20">
+            <Link2 className="w-5 h-5 animate-pulse" />
+          </div>
+          <span className="text-xs font-bold text-white tracking-wide">
+            Tocar para Vincular
+          </span>
+          <span className="text-[11px] font-mono text-emerald-300 mt-0.5">
+            Asignar "{bindingVariable}" a este widget
+          </span>
+        </div>
+      )}
+
       {/* Overlay de Redimensionamiento interactivo */}
       {isResizing && (
         <div className="absolute inset-0 bg-emerald-950/30 backdrop-blur-[2px] z-20 flex items-center justify-center pointer-events-none border-2 border-emerald-400 rounded-2xl">
@@ -316,13 +340,13 @@ export function WidgetContainer({
       {/* Widget Header con Asa de 6 puntos para mover de posicion */}
       <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-slate-800/60">
         <div className="flex items-center gap-1.5 min-w-0">
-          {/* Asa de 6 puntos */}
+          {/* Asa de 6 puntos - Solo Desktop */}
           <div
             draggable
             onDragStart={handleWidgetDragStart}
             onDragEnd={handleWidgetDragEnd}
             title="Mantén presionado y arrastra para reordenar este widget en el lienzo"
-            className="p-1 rounded-md text-slate-500 hover:text-emerald-400 hover:bg-slate-800 cursor-grab active:cursor-grabbing transition"
+            className="hidden lg:flex p-1 rounded-md text-slate-500 hover:text-emerald-400 hover:bg-slate-800 cursor-grab active:cursor-grabbing transition"
           >
             <GripHorizontal className="w-4 h-4 stroke-[2.5]" />
           </div>
@@ -343,7 +367,7 @@ export function WidgetContainer({
           </div>
         </div>
 
-        {/* Action Controls (Sin los botones < > solicitados para remover) */}
+        {/* Action Controls */}
         <div className="flex items-center gap-1">
           {/* Boton de Settings para colores y max/min */}
           <button
@@ -381,13 +405,13 @@ export function WidgetContainer({
         {renderWidgetBody()}
       </div>
 
-      {/* Esquina Inferior Derecha: Asa de Redimensionamiento CloudWatch (Ancho y Alto) */}
+      {/* Esquina Inferior Derecha: Asa de Redimensionamiento CloudWatch (Ancho y Alto) - Solo Desktop */}
       <div
         onPointerDown={handleResizePointerDown}
         onPointerMove={handleResizePointerMove}
         onPointerUp={handleResizePointerUp}
         title="Arrastra para redimensionar ancho (columnas) y alto (filas)"
-        className={`absolute bottom-0 right-0 w-7 h-7 cursor-se-resize flex items-end justify-end p-1 transition-colors z-30 ${
+        className={`hidden lg:flex absolute bottom-0 right-0 w-7 h-7 cursor-se-resize items-end justify-end p-1 transition-colors z-30 ${
           isResizing ? 'text-emerald-300' : 'text-slate-500 hover:text-emerald-400'
         }`}
       >
