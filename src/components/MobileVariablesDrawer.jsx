@@ -92,25 +92,33 @@ export function MobileVariablesDrawer({
             varList.map((v) => (
               <div
                 key={v.name}
-                className="p-3 rounded-2xl border border-slate-800 bg-slate-950/70 hover:border-slate-700 transition flex items-center justify-between gap-3 select-none"
+                className="p-3 rounded-2xl border border-slate-800 bg-slate-950/70 hover:border-slate-700 transition flex items-center justify-between gap-2.5 select-none"
               >
-                <div className="min-w-0">
-                  <span className="text-xs font-bold text-slate-200 block truncate">
+                <div className="min-w-0 flex-1">
+                  <span
+                    className="text-xs font-bold text-slate-200 block truncate"
+                    title={v.name}
+                  >
                     {v.name}
                   </span>
-                  <span className="text-[10px] text-slate-500 font-mono flex items-center gap-1 mt-0.5">
-                    <Clock className="w-2.5 h-2.5" />
+                  <span className="text-[10px] text-slate-500 font-mono flex items-center gap-1 mt-0.5 whitespace-nowrap">
+                    <Clock className="w-2.5 h-2.5 shrink-0" />
                     {v.lastUpdated ? v.lastUpdated.toLocaleTimeString() : 'ahora'}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
-                  {/* Live Value */}
-                  <span className="px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800 font-mono text-xs font-bold text-emerald-400">
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {/* Live Value with truncation for long strings */}
+                  <span
+                    className="max-w-[100px] truncate px-2 py-1 rounded-xl bg-slate-900 border border-slate-800 font-mono text-xs font-bold text-emerald-400 text-center"
+                    title={String(v.value)}
+                  >
                     {typeof v.value === 'number'
                       ? Number.isInteger(v.value)
                         ? v.value
                         : v.value.toFixed(1)
+                      : String(v.value).length > 12
+                      ? `${String(v.value).slice(0, 11)}…`
                       : String(v.value)}
                     {v.unit && <span className="text-[10px] text-slate-400 ml-1">{v.unit}</span>}
                   </span>
@@ -118,7 +126,7 @@ export function MobileVariablesDrawer({
                   {/* One-Tap Bind Button for Mobile */}
                   <button
                     onClick={() => handleBindClick(v.name)}
-                    className="px-2.5 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-sm"
+                    className="px-2.5 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-1 transition active:scale-95 shadow-sm whitespace-nowrap"
                   >
                     <Link2 className="w-3.5 h-3.5" />
                     <span>Vincular</span>

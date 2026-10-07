@@ -82,11 +82,10 @@ export function CanvasGrid({
 
           <button
             onClick={onOpenAddWidgetModal}
-            className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs px-3 py-1 rounded-xl shadow-md shadow-emerald-500/20 active:scale-95 transition whitespace-nowrap"
+            className="hidden sm:flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-xl shadow-md shadow-emerald-500/20 active:scale-95 transition whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5 stroke-[3]" />
-            <span className="hidden sm:inline">+ Nuevo Widget</span>
-            <span className="sm:hidden">+ Widget</span>
+            <span>Nuevo Widget</span>
           </button>
         </div>
       </div>
