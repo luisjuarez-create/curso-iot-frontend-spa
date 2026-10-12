@@ -55,17 +55,20 @@ export function WidgetContainer({
   // 1. MANEJO DE DRAG & DROP DE VARIABLES Y REORDENAMIENTO
   const handleDragOver = (e) => {
     e.preventDefault()
-    e.dataTransfer.dropEffect = 'copy'
 
+    // dropEffect debe estar permitido por el effectAllowed del origen; si no, el navegador cancela el drop
     const types = e.dataTransfer.types
     if (types.includes('application/x-widget-id')) {
-      setIsDragOverWidget(true)
+      e.dataTransfer.dropEffect = 'move'
+      if (!isDraggingSelf) setIsDragOverWidget(true)
     } else {
+      e.dataTransfer.dropEffect = 'copy'
       setIsDragOverVariable(true)
     }
   }
 
-  const handleDragLeave = () => {
+  const handleDragLeave = (e) => {
+    if (e.currentTarget.contains(e.relatedTarget)) return
     setIsDragOverVariable(false)
     setIsDragOverWidget(false)
   }
