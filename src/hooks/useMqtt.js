@@ -150,7 +150,6 @@ export function useMqtt(brokerUrl, deviceId) {
               max: isNumeric ? numVal : null,
               history: [],
               lastUpdated: now,
-              unit: inferUnit(key),
             }
 
             const newNum = isNumeric ? numVal : current.numericValue
@@ -177,7 +176,6 @@ export function useMqtt(brokerUrl, deviceId) {
               max: newMax,
               history,
               lastUpdated: now,
-              unit: inferUnit(key),
             }
           })
 
@@ -204,19 +202,4 @@ export function useMqtt(brokerUrl, deviceId) {
     packetCount,
     lastPacketTime,
   }
-}
-
-// Infiere automaticamente la unidad segun el nombre de la variable
-function inferUnit(varName) {
-  const lower = varName.toLowerCase()
-  if (lower.includes('temp')) return '°C'
-  if (lower.includes('hum')) return '%'
-  if (lower.includes('pres')) return 'hPa'
-  if (lower.includes('bat') || lower.includes('volt')) return 'V'
-  if (lower.includes('corriente') || lower.includes('amp')) return 'A'
-  if (lower.includes('pot') || lower.includes('watt')) return 'W'
-  if (lower.includes('rpm') || lower.includes('vel')) return 'RPM'
-  if (lower.includes('lux') || lower.includes('luz')) return 'lx'
-  if (lower.includes('dist') || lower.includes('nivel')) return 'cm'
-  return ''
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Radio, Cpu, RefreshCw, Activity, Plus } from 'lucide-react'
+import { Radio, Cpu, Activity, Plus } from 'lucide-react'
 
 export function Header({
   deviceId,
@@ -72,20 +72,17 @@ export function Header({
 
       {/* Center Device Badge & Info */}
       <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2 bg-slate-800/80 border border-slate-700/80 rounded-xl px-2.5 py-1 shadow-inner">
+        <button
+          onClick={onOpenDeviceModal}
+          className="flex items-center gap-2 bg-slate-800/80 border border-slate-700/80 rounded-xl px-2.5 py-1 shadow-inner text-slate-200 hover:bg-slate-700/80 hover:border-emerald-500/50 hover:text-white active:scale-[0.98] transition cursor-pointer min-w-0"
+          title="Cambiar Tópico"
+        >
           <Cpu className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-          <span className="text-xs font-mono font-semibold text-slate-200">
+          <span className="text-xs font-mono font-semibold truncate max-w-[110px] sm:max-w-[220px]">
             {deviceId || '---'}
           </span>
           {renderStatusBadge()}
-          <button
-            onClick={onOpenDeviceModal}
-            className="p-1 hover:bg-slate-700 rounded-md text-slate-400 hover:text-white transition"
-            title="Cambiar Dispositivo"
-          >
-            <RefreshCw className="w-3 h-3" />
-          </button>
-        </div>
+        </button>
 
         {/* Packets count */}
         <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 bg-slate-800/40 px-2.5 py-1 rounded-lg border border-slate-800">

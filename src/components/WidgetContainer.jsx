@@ -46,7 +46,6 @@ export function WidgetContainer({
     ? variables[widget.variableKey] || {
         name: widget.variableKey,
         value: '---',
-        unit: '',
         history: [],
         lastUpdated: null,
       }
@@ -274,7 +273,7 @@ export function WidgetContainer({
                 </option>
                 {Object.keys(variables).map((k) => (
                   <option key={k} value={k}>
-                    {k} ({typeof variables[k].value === 'number' ? variables[k].value.toFixed(1) : variables[k].value} {variables[k].unit})
+                    {k} ({typeof variables[k].value === 'number' ? variables[k].value.toFixed(1) : variables[k].value})
                   </option>
                 ))}
               </select>
@@ -388,7 +387,7 @@ export function WidgetContainer({
           {/* Boton de Settings para colores y max/min */}
           <button
             onClick={() => onOpenSettings(widget)}
-            title="Configurar título, umbrales y colores del widget"
+            title="Configurar tipo de variable, escala, alertas y colores"
             className="p-1.5 rounded-lg text-slate-500 hover:text-emerald-400 hover:bg-slate-800 transition"
           >
             <Settings className="w-3.5 h-3.5" />

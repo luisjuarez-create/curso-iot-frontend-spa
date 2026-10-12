@@ -1,32 +1,25 @@
 import React from 'react'
-import { BatteryCharging, Droplets } from 'lucide-react'
+import { getScale, getColors, getZone, zoneColor, formatNumber } from '../../lib/widgetSettings.js'
+
+const ZONE_LABELS = {
+  low: 'Debajo de alerta baja',
+  high: 'Arriba de alerta alta',
+  normal: 'Dentro de rango',
+}
 
 export function LevelBarWidget({ variable, settings = {} }) {
   if (!variable) return null
 
   const val = typeof variable.value === 'number' ? variable.value : Number(variable.value) || 0
-  const isBattery = variable.name.toLowerCase().includes('bat') || variable.name.toLowerCase().includes('volt')
+  const unit = settings.unit || ''
 
-  let min = settings.min !== null && settings.min !== undefined ? settings.min : (isBattery ? 3.0 : 0)
-  let max = settings.max !== null && settings.max !== undefined ? settings.max : (isBattery ? 4.2 : 100)
-
-  const minColor = settings.minColor || '#06b6d4'
-  const normalColor = settings.normalColor || '#10b981'
-  const maxColor = settings.maxColor || '#ef4444'
-
+  const { min, max } = getScale(settings)
   const range = max - min === 0 ? 1 : max - min
   const pct = Math.max(0, Math.min(100, ((val - min) / range) * 100))
 
-  let activeColor = normalColor
-  let statusLabel = 'Nivel Óptimo'
-
-  if (pct < 30) {
-    activeColor = minColor
-    statusLabel = 'Nivel Bajo'
-  } else if (pct > 75) {
-    activeColor = maxColor
-    statusLabel = 'Nivel Alto'
-  }
+  const colors = getColors(settings)
+  const zone = getZone(val, settings)
+  const activeColor = zoneColor(zone, colors)
 
   return (
     <div className="flex flex-col justify-between h-full pt-1">
@@ -34,12 +27,11 @@ export function LevelBarWidget({ variable, settings = {} }) {
       <div className="flex items-baseline justify-between mb-2">
         <div className="flex items-baseline gap-1.5">
           <span className="text-3xl font-extrabold font-mono tracking-tight" style={{ color: activeColor }}>
-            {val.toFixed(2)}
+            {formatNumber(val, 2)}
           </span>
-          <span className="text-xs font-bold text-slate-400 font-mono">{variable.unit}</span>
+          {unit && <span className="text-xs font-bold text-slate-400 font-mono">{unit}</span>}
         </div>
-        <div className="flex items-center gap-1 text-[11px] font-mono font-bold px-2 py-0.5 rounded-lg bg-slate-950 border border-slate-800">
-          {isBattery ? <BatteryCharging className="w-3.5 h-3.5" style={{ color: activeColor }} /> : <Droplets className="w-3.5 h-3.5" style={{ color: activeColor }} />}
+        <div className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-lg bg-slate-950 border border-slate-800">
           <span style={{ color: activeColor }}>{pct.toFixed(0)}%</span>
         </div>
       </div>
@@ -60,15 +52,11 @@ export function LevelBarWidget({ variable, settings = {} }) {
         </div>
 
         <div className="mt-2 flex items-center justify-between text-[11px] font-mono text-slate-400">
-          <span style={{ color: activeColor }}>● {statusLabel}</span>
-          <span className="text-slate-500">{min.toFixed(1)} - {max.toFixed(1)} {variable.unit}</span>
+          <span style={{ color: activeColor }}>{zone ? `● ${ZONE_LABELS[zone]}` : '● En vivo'}</span>
+          <span className="text-slate-500">
+            {formatNumber(min)} – {formatNumber(max)} {unit}
+          </span>
         </div>
-      </div>
-
-      {/* Footer */}
-      <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono border-t border-slate-800/80 pt-1.5 mt-1">
-        <span>Capacidad: {pct.toFixed(1)}%</span>
-        <span style={{ color: activeColor }}>Estable</span>
       </div>
     </div>
   )

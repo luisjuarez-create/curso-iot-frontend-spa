@@ -1,8 +1,7 @@
 import React, { useRef, useState, useEffect, useId } from 'react'
+import { isSet, getColors, getZone, zoneColor, formatNumber } from '../../lib/widgetSettings.js'
 
 export function LineChartWidget({ variable, settings = {} }) {
-  if (!variable) return null
-
   const containerRef = useRef(null)
   const [width, setWidth] = useState(320)
   const gradientId = useId()
@@ -19,26 +18,24 @@ export function LineChartWidget({ variable, settings = {} }) {
     return () => ro.disconnect()
   }, [])
 
+  if (!variable) return null
+
   const history = variable.history || []
   const values = history.map((h) => h.val)
   const currentVal = typeof variable.value === 'number' ? variable.value : Number(variable.value)
 
-  let min = settings.min !== null && settings.min !== undefined ? settings.min : (values.length > 0 ? Math.min(...values) : 0)
-  let max = settings.max !== null && settings.max !== undefined ? settings.max : (values.length > 0 ? Math.max(...values) : 100)
+  const unit = settings.unit || ''
+
+  // Escala del eje: la configurada por el usuario o, si no hay, el rango de las lecturas.
+  let min = isSet(settings.scaleMin) ? Number(settings.scaleMin) : (values.length > 0 ? Math.min(...values) : 0)
+  let max = isSet(settings.scaleMax) ? Number(settings.scaleMax) : (values.length > 0 ? Math.max(...values) : 1)
   if (min === max) {
     min = min - 1
     max = max + 1
   }
   const range = max - min === 0 ? 1 : max - min
 
-  const minColor = settings.minColor || '#06b6d4'
-  const normalColor = settings.normalColor || '#10b981'
-  const maxColor = settings.maxColor || '#ef4444'
-
-  // Determine line color based on current value
-  let activeColor = normalColor
-  if (settings.min !== null && currentVal < settings.min) activeColor = minColor
-  else if (settings.max !== null && currentVal > settings.max) activeColor = maxColor
+  const activeColor = zoneColor(getZone(currentVal, settings), getColors(settings))
 
   const height = 110
   const paddingX = 14
@@ -81,7 +78,7 @@ export function LineChartWidget({ variable, settings = {} }) {
           <span className="text-3xl font-extrabold font-mono tracking-tight" style={{ color: activeColor }}>
             {isNaN(currentVal) ? String(variable.value) : currentVal.toFixed(2)}
           </span>
-          <span className="text-xs font-bold text-slate-400 font-mono">{variable.unit}</span>
+          {unit && <span className="text-xs font-bold text-slate-400 font-mono">{unit}</span>}
         </div>
         <div className="text-[10px] font-mono text-slate-400 bg-slate-950/80 px-2 py-0.5 rounded border border-slate-800">
           {history.length} muestras
@@ -139,9 +136,9 @@ export function LineChartWidget({ variable, settings = {} }) {
 
       {/* Range Labels */}
       <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono mt-1">
-        <span style={{ color: minColor }}>Mín: {min.toFixed(1)}</span>
+        <span>Eje: {formatNumber(min)}</span>
         <span className="font-semibold" style={{ color: activeColor }}>● En vivo</span>
-        <span style={{ color: maxColor }}>Máx: {max.toFixed(1)}</span>
+        <span>{formatNumber(max)} {unit}</span>
       </div>
     </div>
   )

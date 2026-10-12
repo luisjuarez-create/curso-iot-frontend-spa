@@ -1,5 +1,17 @@
 import React, { useState } from 'react'
-import { Cpu, Check, HelpCircle, X } from 'lucide-react'
+import { Radio, Check, HelpCircle, X } from 'lucide-react'
+
+// MQTT reserva '+', '#' y '/' en los tópicos; los espacios se cambian por guiones.
+function sanitizeTopicName(value) {
+  return value
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[+#/]/g, '')
+}
+
+const presets = [
+  { id: '002130126', label: 'ESP32-test' },
+]
 
 export function DeviceModal({
   isOpen,
@@ -9,22 +21,17 @@ export function DeviceModal({
   onClose,
   canClose = true
 }) {
-  const [deviceId, setDeviceId] = useState(currentDeviceId || '002130123')
+  const [topicName, setTopicName] = useState(currentDeviceId || '')
 
   if (!isOpen) return null
 
-  const presets = [
-    { id: '002130123', label: 'Laboratorio A' },
-    { id: '002130124', label: 'Cámara Fría' },
-    { id: '002130125', label: 'Invernadero' },
-    { id: '002130126', label: 'ESP32-C6 DevKit' },
-  ]
+  const sanitized = sanitizeTopicName(topicName)
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!deviceId.trim()) return
+    if (!sanitized) return
     onSave({
-      deviceId: deviceId.trim(),
+      deviceId: sanitized,
       brokerUrl: currentBrokerUrl
     })
   }
@@ -36,11 +43,11 @@ export function DeviceModal({
         <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-800/40">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <Cpu className="w-4 h-4" />
+              <Radio className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-slate-100">Seleccionar Dispositivo IoT</h2>
-              <p className="text-xs text-slate-400">Ingresa el ID del equipo para suscribirse a sus datos</p>
+              <h2 className="text-sm font-semibold text-slate-100">Conectar a un Tópico</h2>
+              <p className="text-xs text-slate-400">Ingresa el nombre del tópico de tu dispositivo</p>
             </div>
           </div>
           {canClose && (
@@ -55,38 +62,43 @@ export function DeviceModal({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
-          {/* Device ID Input */}
+          {/* Topic Name Input */}
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              ID del Dispositivo (Serial / Identificador)
+              Nombre del Tópico
             </label>
             <input
               type="text"
-              value={deviceId}
-              onChange={(e) => setDeviceId(e.target.value)}
-              placeholder="Ej. 002130126"
+              value={topicName}
+              onChange={(e) => setTopicName(e.target.value)}
+              placeholder="Ej. juan-perez o mi-sensor-01"
+              autoFocus
               required
               className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
             />
+            <p className="text-[11px] text-slate-400 mt-1.5 leading-snug">
+              Es el nombre que configuraste en tu dispositivo después de{' '}
+              <span className="font-mono text-slate-300">devices/</span>
+            </p>
             <p className="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1">
               <HelpCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              Se escuchará el tópico: <span className="font-mono text-emerald-400 font-semibold">devices/{deviceId || '{id}'}/#</span>
+              Se escuchará el tópico: <span className="font-mono text-emerald-400 font-semibold break-all">devices/{sanitized || '{nombre}'}/#</span>
             </p>
           </div>
 
           {/* Quick Presets */}
           <div>
             <span className="block text-[11px] font-medium text-slate-400 mb-1.5 uppercase tracking-wider">
-              Dispositivos de Prueba Disponibles:
+              Tópico de Prueba Disponible:
             </span>
             <div className="grid grid-cols-2 gap-2">
               {presets.map((p) => (
                 <button
                   type="button"
                   key={p.id}
-                  onClick={() => setDeviceId(p.id)}
+                  onClick={() => setTopicName(p.id)}
                   className={`px-2.5 py-2 rounded-xl text-left border transition text-xs flex flex-col gap-0.5 ${
-                    deviceId === p.id
+                    sanitized === p.id
                       ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-300'
                       : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800'
                   }`}
@@ -102,7 +114,8 @@ export function DeviceModal({
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2"
+              disabled={!sanitized}
+              className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Check className="w-4 h-4 stroke-[2.5]" />
               Conectar y Ver Variables

@@ -7,6 +7,7 @@ import { AddWidgetModal } from './components/AddWidgetModal.jsx'
 import { WidgetSettingsModal } from './components/WidgetSettingsModal.jsx'
 import { MobileVariablesDrawer } from './components/MobileVariablesDrawer.jsx'
 import { useMqtt } from './hooks/useMqtt.js'
+import { DEFAULT_COLORS } from './lib/widgetSettings.js'
 import { Layers, Plus, Radio } from 'lucide-react'
 
 export default function App() {
@@ -15,12 +16,11 @@ export default function App() {
   const defaultSecureBroker = 'wss://curso-iot-broker-100-48-65-94.sslip.io'
   const defaultInsecureBroker = 'ws://100.48.65.94:9001'
 
-  const defaultDevice = import.meta.env.VITE_DEFAULT_DEVICE_ID || '002130123'
   const defaultBroker = import.meta.env.VITE_MQTT_BROKER_URL || (isHttps ? defaultSecureBroker : defaultInsecureBroker)
 
-  const [deviceId, setDeviceId] = useState(() => {
-    return localStorage.getItem('cidesi_iot_device_id') || defaultDevice
-  })
+  // El tópico se elige siempre al entrar; el último usado solo precarga el diálogo.
+  const [deviceId, setDeviceId] = useState('')
+  const [lastTopic] = useState(() => localStorage.getItem('cidesi_iot_device_id') || '')
   const [brokerUrl, setBrokerUrl] = useState(() => {
     const saved = localStorage.getItem('cidesi_iot_broker_url')
     if (saved) {
@@ -35,112 +35,17 @@ export default function App() {
   })
 
   // Modals state
-  const [isDeviceModalOpen, setIsDeviceModalOpen] = useState(() => {
-    return !localStorage.getItem('cidesi_iot_device_id') && !import.meta.env.VITE_DEFAULT_DEVICE_ID
-  })
+  const [isDeviceModalOpen, setIsDeviceModalOpen] = useState(true)
   const [isAddWidgetModalOpen, setIsAddWidgetModalOpen] = useState(false)
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
   const [settingsWidget, setSettingsWidget] = useState(null)
   const [bindingVariable, setBindingVariable] = useState(null)
 
-  // Widgets state (persisted in localStorage)
+  // Widgets state (persisted in localStorage). El lienzo inicia vacío.
   const [widgets, setWidgets] = useState(() => {
     try {
-      const saved = localStorage.getItem('cidesi_iot_widgets_v3')
-      if (saved) return JSON.parse(saved)
-
-      return [
-        {
-          id: 'widget-kpi-temp',
-          type: 'numeric',
-          title: 'TEMPERATURA ACTUAL',
-          variableKey: 'temperatura',
-          colSpan: 1,
-          rowSpan: 1,
-          settings: {
-            min: 18.0,
-            max: 26.0,
-            minColor: '#06b6d4',
-            normalColor: '#10b981',
-            maxColor: '#ef4444',
-          },
-        },
-        {
-          id: 'widget-gauge-hum',
-          type: 'gauge',
-          title: 'MEDIDOR DE HUMEDAD',
-          variableKey: 'humedad',
-          colSpan: 1,
-          rowSpan: 1,
-          settings: {
-            min: 30.0,
-            max: 80.0,
-            minColor: '#06b6d4',
-            normalColor: '#10b981',
-            maxColor: '#f59e0b',
-          },
-        },
-        {
-          id: 'widget-level-bat',
-          type: 'level_bar',
-          title: 'NIVEL DE BATERÍA',
-          variableKey: 'bateria',
-          colSpan: 1,
-          rowSpan: 1,
-          settings: {
-            min: 3.5,
-            max: 4.2,
-            minColor: '#ef4444',
-            normalColor: '#10b981',
-            maxColor: '#10b981',
-          },
-        },
-        {
-          id: 'widget-status-led',
-          type: 'status_indicator',
-          title: 'SUPERVISIÓN AMBIENTAL',
-          variableKey: 'temperatura',
-          colSpan: 1,
-          rowSpan: 1,
-          settings: {
-            min: 15.0,
-            max: 27.0,
-            minColor: '#38bdf8',
-            normalColor: '#10b981',
-            maxColor: '#dc2626',
-          },
-        },
-        {
-          id: 'widget-chart-temp',
-          type: 'line_chart',
-          title: 'TENDENCIA EN TIEMPO REAL',
-          variableKey: 'temperatura',
-          colSpan: 2,
-          rowSpan: 1,
-          settings: {
-            min: 19.0,
-            max: 25.0,
-            minColor: '#06b6d4',
-            normalColor: '#22d3ee',
-            maxColor: '#ef4444',
-          },
-        },
-        {
-          id: 'widget-bar-pres',
-          type: 'bar_chart',
-          title: 'HISTOGRAMA DE PRESIÓN',
-          variableKey: 'presion',
-          colSpan: 2,
-          rowSpan: 1,
-          settings: {
-            min: 1010.0,
-            max: 1018.0,
-            minColor: '#06b6d4',
-            normalColor: '#14b8a6',
-            maxColor: '#f97316',
-          },
-        },
-      ]
+      const saved = localStorage.getItem('cidesi_iot_widgets_v4')
+      return saved ? JSON.parse(saved) : []
     } catch {
       return []
     }
@@ -148,7 +53,7 @@ export default function App() {
 
   // Persist widgets
   useEffect(() => {
-    localStorage.setItem('cidesi_iot_widgets_v3', JSON.stringify(widgets))
+    localStorage.setItem('cidesi_iot_widgets_v4', JSON.stringify(widgets))
   }, [widgets])
 
   // MQTT Hook
@@ -190,11 +95,13 @@ export default function App() {
       colSpan: defaultSpans[widgetType] || 1,
       rowSpan: 1,
       settings: {
+        variableType: 'generic',
+        unit: '',
+        scaleMin: null,
+        scaleMax: null,
         min: null,
         max: null,
-        minColor: '#06b6d4',
-        normalColor: '#10b981',
-        maxColor: '#ef4444',
+        ...DEFAULT_COLORS,
       },
     }
     setWidgets((prev) => [...prev, newWidget])
@@ -309,7 +216,8 @@ export default function App() {
       {/* Modals & Drawers */}
       <DeviceModal
         isOpen={isDeviceModalOpen}
-        currentDeviceId={deviceId}
+        key={isDeviceModalOpen ? 'device-modal-open' : 'device-modal-closed'}
+        currentDeviceId={deviceId || lastTopic}
         currentBrokerUrl={brokerUrl}
         onSave={handleSaveDevice}
         onClose={() => setIsDeviceModalOpen(false)}

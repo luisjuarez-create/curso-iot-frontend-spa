@@ -54,7 +54,7 @@ export function MobileVariablesDrawer({
               </span>
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5 font-mono">
-              Dispositivo: {deviceId}
+              Tópico: {deviceId}
             </p>
           </div>
           <button

@@ -1,4 +1,5 @@
 import React from 'react'
+import { isSet, getColors, getZone, zoneColor, formatNumber } from '../../lib/widgetSettings.js'
 
 export function NumericWidgetView({ variable, settings = {} }) {
   if (!variable) return null
@@ -6,20 +7,13 @@ export function NumericWidgetView({ variable, settings = {} }) {
   const val = typeof variable.value === 'number' ? variable.value : Number(variable.value)
   const isNumeric = !isNaN(val)
 
-  const min = settings.min !== null && settings.min !== undefined ? settings.min : variable.min
-  const max = settings.max !== null && settings.max !== undefined ? settings.max : variable.max
+  const unit = settings.unit || ''
+  const hasLow = isSet(settings.min)
+  const hasHigh = isSet(settings.max)
 
-  // Dynamic color according to thresholds
-  const minColor = settings.minColor || '#06b6d4'
-  const normalColor = settings.normalColor || '#10b981'
-  const maxColor = settings.maxColor || '#ef4444'
-
-  let valueColor = '#f8fafc' // Slate 50
-  if (isNumeric) {
-    if (min !== null && val < min) valueColor = minColor
-    else if (max !== null && val > max) valueColor = maxColor
-    else if (min !== null || max !== null) valueColor = normalColor
-  }
+  const colors = getColors(settings)
+  const zone = isNumeric ? getZone(val, settings) : null
+  const valueColor = zone ? zoneColor(zone, colors) : '#f8fafc'
 
   return (
     <div className="flex flex-col justify-between h-full pt-1">
@@ -35,9 +29,9 @@ export function NumericWidgetView({ variable, settings = {} }) {
                 : val.toFixed(2)
               : String(variable.value)}
           </span>
-          {variable.unit && (
+          {unit && (
             <span className="text-lg md:text-xl font-bold text-slate-400 font-mono">
-              {variable.unit}
+              {unit}
             </span>
           )}
         </div>
@@ -48,11 +42,11 @@ export function NumericWidgetView({ variable, settings = {} }) {
         <span className="whitespace-nowrap">
           {variable.lastUpdated ? variable.lastUpdated.toLocaleTimeString() : 'En vivo'}
         </span>
-        {(min !== null || max !== null) && (
-          <div className="flex items-center gap-1.5 whitespace-nowrap">
-            {min !== null && <span style={{ color: minColor }}>↓ {min.toFixed(0)}</span>}
-            {min !== null && max !== null && <span className="text-slate-700">|</span>}
-            {max !== null && <span style={{ color: maxColor }}>↑ {max.toFixed(0)}</span>}
+        {(hasLow || hasHigh) && (
+          <div className="flex items-center gap-1.5 whitespace-nowrap" title="Umbrales de alerta">
+            {hasLow && <span style={{ color: colors.minColor }}>↓ {formatNumber(settings.min)}</span>}
+            {hasLow && hasHigh && <span className="text-slate-700">|</span>}
+            {hasHigh && <span style={{ color: colors.maxColor }}>↑ {formatNumber(settings.max)}</span>}
           </div>
         )}
       </div>

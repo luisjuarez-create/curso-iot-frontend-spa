@@ -1,5 +1,6 @@
 import React from 'react'
-import { ShieldCheck, AlertTriangle, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
+import { isSet, getColors, formatNumber } from '../../lib/widgetSettings.js'
 
 export function StatusWidget({ variable, settings = {} }) {
   if (!variable) return null
@@ -8,12 +9,12 @@ export function StatusWidget({ variable, settings = {} }) {
   const numVal = typeof rawVal === 'number' ? rawVal : Number(rawVal)
   const isNumeric = !isNaN(numVal)
 
-  const min = settings.min !== null && settings.min !== undefined ? settings.min : null
-  const max = settings.max !== null && settings.max !== undefined ? settings.max : null
+  const min = isSet(settings.min) ? Number(settings.min) : null
+  const max = isSet(settings.max) ? Number(settings.max) : null
+  const unit = settings.unit || ''
+  const withUnit = (n) => (unit ? `${formatNumber(n)} ${unit}` : formatNumber(n))
 
-  const minColor = settings.minColor || '#06b6d4'
-  const normalColor = settings.normalColor || '#10b981'
-  const maxColor = settings.maxColor || '#ef4444'
+  const { minColor, normalColor, maxColor } = getColors(settings)
 
   let status = 'NORMAL'
   let activeColor = normalColor
@@ -23,15 +24,15 @@ export function StatusWidget({ variable, settings = {} }) {
     if (min !== null && numVal < min) {
       status = 'VALOR BAJO'
       activeColor = minColor
-      message = `Lectura ${numVal.toFixed(1)} inferior al mínimo (${min})`
+      message = `Lectura ${withUnit(numVal)} inferior a la alerta baja (${withUnit(min)})`
     } else if (max !== null && numVal > max) {
       status = 'ALERTA MÁXIMA'
       activeColor = maxColor
-      message = `Lectura ${numVal.toFixed(1)} superior al máximo (${max})`
+      message = `Lectura ${withUnit(numVal)} superior a la alerta alta (${withUnit(max)})`
     } else {
       status = 'DENTRO DE RANGO'
       activeColor = normalColor
-      message = `Valor dentro de intervalo seguro (${min ?? '-'} a ${max ?? '-'})`
+      message = `Valor dentro de intervalo seguro (${min !== null ? withUnit(min) : '-'} a ${max !== null ? withUnit(max) : '-'})`
     }
   } else if (typeof rawVal === 'string') {
     const upper = rawVal.toUpperCase()
@@ -81,7 +82,7 @@ export function StatusWidget({ variable, settings = {} }) {
         </div>
         <div>
           <span className="text-xl font-bold font-mono text-slate-100 block">
-            {isNumeric ? `${numVal.toFixed(2)} ${variable.unit}` : String(rawVal)}
+            {isNumeric ? withUnit(numVal) : String(rawVal)}
           </span>
           <p className="text-xs text-slate-400 mt-0.5 leading-snug">{message}</p>
         </div>
