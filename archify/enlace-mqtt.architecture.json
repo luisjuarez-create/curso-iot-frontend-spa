@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Enlace MQTT: dispositivo → WiFi → Internet → broker",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "external": { "label": "Dispositivo IoT" },
+        "cloud": { "label": "Red" },
+        "messagebus": { "label": "Broker MQTT" },
+        "frontend": { "label": "Dashboard web" }
+      }
+    }
+  },
+  "components": [
+    { "id": "dev-esp32-test", "type": "external", "label": "ESP32-test", "sublabel": "devices/002130126/…", "pos": [40, 110], "size": [190, 72] },
+    { "id": "dev-juan", "type": "external", "label": "ESP32 de Juan", "sublabel": "devices/juan-perez-01/…", "pos": [40, 270], "size": [190, 72] },
+    { "id": "dev-invernadero", "type": "external", "label": "Sensor invernadero", "sublabel": "devices/invernadero-02/…", "pos": [40, 430], "size": [190, 72] },
+    { "id": "wifi", "type": "cloud", "label": "Router WiFi", "sublabel": "red local 2.4 GHz", "pos": [330, 270], "size": [160, 72] },
+    { "id": "internet", "type": "cloud", "label": "Internet", "sublabel": "IP pública", "pos": [580, 270], "size": [160, 72] },
+    { "id": "broker", "type": "messagebus", "label": "Broker Mosquitto", "sublabel": "tópico base devices/", "pos": [840, 270], "size": [190, 72] },
+    { "id": "dashboard", "type": "frontend", "label": "Dashboard web", "sublabel": "escucha devices/<id>/#", "pos": [840, 470], "size": [190, 72] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Servidor 100.48.65.94", "wraps": ["broker"] }
+  ],
+  "connections": [
+    { "id": "esp32-test-wifi", "from": "dev-esp32-test", "to": "wifi", "label": "WiFi" },
+    { "id": "juan-wifi", "from": "dev-juan", "to": "wifi", "label": "WiFi", "labelAt": [255, 296] },
+    { "id": "invernadero-wifi", "from": "dev-invernadero", "to": "wifi", "label": "WiFi" },
+    { "id": "wifi-internet", "from": "wifi", "to": "internet", "label": "TCP/IP" },
+    { "id": "internet-broker", "from": "internet", "to": "broker", "label": "MQTT TCP :1883", "variant": "emphasis" },
+    { "id": "broker-dashboard", "from": "broker", "to": "dashboard", "label": "WS :9001 · WSS :443", "labelAt": [935, 406] }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Broker", "items": ["Mosquitto en 100.48.65.94", "Dispositivos: MQTT TCP puerto 1883", "Dashboard: WebSocket 9001 o WSS 443"] },
+    { "dot": "cyan", "title": "Tópicos", "items": ["Base: devices/", "Publica: devices/<id>/telemetry", "Estado: devices/<id>/status", "Dashboard escucha: devices/<id>/#"] },
+    { "dot": "amber", "title": "Identificador", "items": ["Cada dispositivo usa su propio <id>", "Solo minúsculas, números y guion", "El mismo <id> se escribe en el dashboard"] }
+  ]
+}

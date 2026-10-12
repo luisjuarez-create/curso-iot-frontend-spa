@@ -1,5 +1,5 @@
 import React from 'react'
-import { Radio, Cpu, Activity, Plus } from 'lucide-react'
+import { Radio, Cpu, Activity, BookOpen } from 'lucide-react'
 
 export function Header({
   deviceId,
@@ -8,6 +8,7 @@ export function Header({
   lastSeenText = 'Sin datos',
   packetCount,
   onOpenDeviceModal,
+  onOpenHelp,
 }) {
   const renderStatusBadge = () => {
     switch (deviceStatus) {
@@ -89,6 +90,15 @@ export function Header({
           <Activity className="w-3.5 h-3.5 text-cyan-400" />
           <span>{packetCount} msgs</span>
         </div>
+
+        <button
+          onClick={onOpenHelp}
+          className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800/60 hover:bg-slate-700/80 px-2.5 py-1.5 rounded-lg border border-slate-700/80 hover:border-emerald-500/50 transition"
+          title="Material de apoyo: código Arduino y diagramas"
+        >
+          <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="hidden sm:inline">Ayuda</span>
+        </button>
       </div>
     </header>
   )

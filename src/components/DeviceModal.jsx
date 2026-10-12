@@ -1,12 +1,20 @@
 import React, { useState } from 'react'
-import { Radio, Check, HelpCircle, X } from 'lucide-react'
+import { Radio, Check, HelpCircle, X, BookOpen } from 'lucide-react'
 
-// MQTT reserva '+', '#' y '/' en los tópicos; los espacios se cambian por guiones.
-function sanitizeTopicName(value) {
+// Solo minúsculas, números y guion medio: los acentos se quitan, los espacios
+// y guiones bajos pasan a guion, y cualquier otro símbolo se elimina.
+function normalizeTopicInput(value) {
   return value
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[+#/]/g, '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[\s_]+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-{2,}/g, '-')
+}
+
+function finalizeTopicName(value) {
+  return normalizeTopicInput(value).replace(/^-+|-+$/g, '')
 }
 
 const presets = [
@@ -19,13 +27,14 @@ export function DeviceModal({
   currentBrokerUrl,
   onSave,
   onClose,
+  onOpenHelp,
   canClose = true
 }) {
-  const [topicName, setTopicName] = useState(currentDeviceId || '')
+  const [topicName, setTopicName] = useState(normalizeTopicInput(currentDeviceId || ''))
 
   if (!isOpen) return null
 
-  const sanitized = sanitizeTopicName(topicName)
+  const sanitized = finalizeTopicName(topicName)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -70,15 +79,15 @@ export function DeviceModal({
             <input
               type="text"
               value={topicName}
-              onChange={(e) => setTopicName(e.target.value)}
-              placeholder="Ej. juan-perez o mi-sensor-01"
+              onChange={(e) => setTopicName(normalizeTopicInput(e.target.value))}
+              placeholder="Ej. juan-perez-01"
               autoFocus
               required
               className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
             />
             <p className="text-[11px] text-slate-400 mt-1.5 leading-snug">
               Es el nombre que configuraste en tu dispositivo después de{' '}
-              <span className="font-mono text-slate-300">devices/</span>
+              <span className="font-mono text-slate-300">devices/</span>. Solo minúsculas, números y guion medio (-).
             </p>
             <p className="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1">
               <HelpCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
@@ -120,6 +129,16 @@ export function DeviceModal({
               <Check className="w-4 h-4 stroke-[2.5]" />
               Conectar y Ver Variables
             </button>
+            {onOpenHelp && (
+              <button
+                type="button"
+                onClick={onOpenHelp}
+                className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs text-slate-400 hover:text-emerald-300 transition"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                ¿Aún no configuras tu dispositivo? Ver guía de conexión
+              </button>
+            )}
           </div>
         </form>
       </div>

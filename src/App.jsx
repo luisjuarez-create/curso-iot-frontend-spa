@@ -8,9 +8,12 @@ import { WidgetSettingsModal } from './components/WidgetSettingsModal.jsx'
 import { MobileVariablesDrawer } from './components/MobileVariablesDrawer.jsx'
 import { useMqtt } from './hooks/useMqtt.js'
 import { DEFAULT_COLORS } from './lib/widgetSettings.js'
+import { HelpHub } from './help/HelpHub.jsx'
+import { useHashRoute, helpHash, navigate } from './help/hashRoute.js'
 import { Layers, Plus, Radio } from 'lucide-react'
 
 export default function App() {
+  const route = useHashRoute()
   // Device & Broker Config (reads environment variables with fallbacks)
   const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:'
   const defaultSecureBroker = 'wss://curso-iot-broker-100-48-65-94.sslip.io'
@@ -152,6 +155,12 @@ export default function App() {
 
   const variablesCount = Object.keys(variables).length
 
+  const openHelp = () => navigate(helpHash())
+
+  if (route.view === 'help') {
+    return <HelpHub guideId={route.guideId} stepId={route.stepId} onExit={() => navigate('#/')} />
+  }
+
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
       {/* Top Header */}
@@ -162,6 +171,7 @@ export default function App() {
         lastSeenText={lastSeenText}
         packetCount={packetCount}
         onOpenDeviceModal={() => setIsDeviceModalOpen(true)}
+        onOpenHelp={openHelp}
         onOpenMobileDrawer={() => setIsMobileDrawerOpen(true)}
         variablesCount={variablesCount}
       />
@@ -222,6 +232,7 @@ export default function App() {
         onSave={handleSaveDevice}
         onClose={() => setIsDeviceModalOpen(false)}
         canClose={Boolean(deviceId)}
+        onOpenHelp={openHelp}
       />
 
       <AddWidgetModal
