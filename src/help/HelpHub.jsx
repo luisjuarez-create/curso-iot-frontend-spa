@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, BookOpen, LayoutDashboard } from 'lucide-react'
 import { GUIDES, ALL_STEPS, findStep } from './guides.js'
 import { helpHash, navigate } from './hashRoute.js'
 import { ArchifyStep } from './steps/ArchifyStep.jsx'
+import { BrandLogos } from '../components/BrandLogos.jsx'
 
 export function HelpHub({ guideId, stepId, onExit }) {
   const currentIndex = findStep(guideId, stepId)
@@ -28,28 +29,43 @@ export function HelpHub({ guideId, stepId, onExit }) {
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
       {/* Top bar */}
-      <header className="h-14 sm:h-16 border-b border-slate-800 bg-slate-900/95 px-3 sm:px-6 flex items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-cyan-500 flex items-center justify-center shrink-0">
-            <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-          </div>
-          <div className="min-w-0">
-            <h1 className="font-bold text-sm sm:text-base tracking-tight truncate">Material de apoyo</h1>
-            <p className="hidden sm:block text-xs text-slate-400">Guías y diagramas del curso</p>
-          </div>
+      <header className="border-b border-slate-800 bg-slate-900/95 shrink-0 flex flex-col lg:flex-row lg:items-center lg:h-16 lg:px-6 lg:gap-6">
+        {/* Logos institucionales: siempre visibles (fila propia en móvil) */}
+        <div className="px-3 py-2 border-b border-slate-800/70 lg:border-0 lg:p-0 lg:flex-1 lg:min-w-0 lg:max-w-[700px]">
+          <BrandLogos className="w-full max-w-[520px] mx-auto lg:max-w-none lg:mx-0" />
         </div>
-        <button
-          onClick={onExit}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition shrink-0"
-        >
-          <LayoutDashboard className="w-4 h-4 text-emerald-400" />
-          <span>Volver al dashboard</span>
-        </button>
+
+        <div className="h-12 px-3 sm:px-6 flex items-center justify-between gap-3 lg:h-auto lg:p-0 lg:ml-auto lg:shrink-0">
+          {/* En lg+ el título vive en el menú lateral */}
+          <div className="flex items-center gap-2.5 min-w-0 lg:hidden">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-emerald-600 to-cyan-500 flex items-center justify-center shrink-0">
+              <BookOpen className="w-3.5 h-3.5 text-white" />
+            </div>
+            <h1 className="font-bold text-sm tracking-tight truncate">Material de apoyo</h1>
+          </div>
+          <button
+            onClick={onExit}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition shrink-0"
+          >
+            <LayoutDashboard className="w-4 h-4 text-emerald-400" />
+            <span className="hidden sm:inline">Volver al dashboard</span>
+            <span className="sm:hidden">Dashboard</span>
+          </button>
+        </div>
       </header>
 
       <div className="flex-1 flex overflow-hidden">
         {/* Navigation menu (desktop) */}
         <nav className="hidden md:flex w-64 shrink-0 flex-col border-r border-slate-800 bg-slate-900/60 overflow-y-auto p-3 gap-4">
+          <div className="hidden lg:flex items-center gap-2.5 px-1 pb-3 border-b border-slate-800">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-cyan-500 flex items-center justify-center shrink-0">
+              <BookOpen className="w-4 h-4 text-white" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="font-bold text-sm tracking-tight truncate">Material de apoyo</h1>
+              <p className="text-[11px] text-slate-400 truncate">Guías y diagramas del curso</p>
+            </div>
+          </div>
           {GUIDES.map((g) => (
             <div key={g.id}>
               <h2 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 px-2">{g.title}</h2>

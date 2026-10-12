@@ -183,6 +183,7 @@ export default function App() {
           variables={variables}
           deviceId={deviceId}
           status={status}
+          packetCount={packetCount}
         />
 
         {/* Right 75% Panel (Full width on Mobile) */}
