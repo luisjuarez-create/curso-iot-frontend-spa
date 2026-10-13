@@ -1,5 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import mqtt from 'mqtt'
+import { resolveBrokerUrl } from '../lib/mqttBroker.js'
+
+const commandTopic = (deviceId) => `devices/${deviceId}/cmd`
 
 export function useMqtt(brokerUrl, deviceId) {
   const [status, setStatus] = useState('disconnected') // 'disconnected' | 'connecting' | 'connected' | 'error'
@@ -68,11 +71,7 @@ export function useMqtt(brokerUrl, deviceId) {
       return
     }
 
-    // Safeguard Mixed Content: si la página corre en HTTPS, forzar wss:// con certificado SSL
-    let resolvedUrl = brokerUrl
-    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && resolvedUrl.startsWith('ws://')) {
-      resolvedUrl = 'wss://curso-iot-broker-100-48-65-94.sslip.io'
-    }
+    const resolvedUrl = resolveBrokerUrl(brokerUrl)
 
     setStatus('connecting')
 
@@ -116,6 +115,8 @@ export function useMqtt(brokerUrl, deviceId) {
     })
 
     client.on('message', (topic, message) => {
+      // Eco de nuestros propios comandos: no es telemetría ni confirma nada
+      if (topic === commandTopic(deviceId)) return
       try {
         const payloadStr = message.toString()
         const data = JSON.parse(payloadStr)
@@ -194,7 +195,19 @@ export function useMqtt(brokerUrl, deviceId) {
     }
   }, [brokerUrl, deviceId])
 
+  // Devuelve false si no hay conexión para que el widget no quede esperando confirmación
+  const publishCommand = useCallback(
+    (command) => {
+      const client = clientRef.current
+      if (!client?.connected || !deviceId) return false
+      client.publish(commandTopic(deviceId), JSON.stringify(command), { qos: 1 })
+      return true
+    },
+    [deviceId]
+  )
+
   return {
+    publishCommand,
     status,
     deviceStatus,
     lastSeenText,

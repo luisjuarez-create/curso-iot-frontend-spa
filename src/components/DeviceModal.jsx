@@ -18,7 +18,7 @@ function finalizeTopicName(value) {
 }
 
 const presets = [
-  { id: '002130126', label: 'ESP32-test' },
+  { id: 'unoq-0fb74d07', label: 'Arduino UNO Q (ejemplo)' },
 ]
 
 export function DeviceModal({
@@ -55,8 +55,8 @@ export function DeviceModal({
               <Radio className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-slate-100">Conectar a un Tópico</h2>
-              <p className="text-xs text-slate-400">Ingresa el nombre del tópico de tu dispositivo</p>
+              <h2 className="text-sm font-semibold text-slate-100">Conectar a un dispositivo</h2>
+              <p className="text-xs text-slate-400">Ingresa el ID de tu dispositivo</p>
             </div>
           </div>
           {canClose && (
@@ -74,31 +74,31 @@ export function DeviceModal({
           {/* Topic Name Input */}
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Nombre del Tópico
+              ID de dispositivo
             </label>
             <input
               type="text"
               value={topicName}
               onChange={(e) => setTopicName(normalizeTopicInput(e.target.value))}
-              placeholder="Ej. juan-perez-01"
+              placeholder="Ej. unoq-1a2b3c4d"
               autoFocus
               required
               className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
             />
             <p className="text-[11px] text-slate-400 mt-1.5 leading-snug">
-              Es el nombre que configuraste en tu dispositivo después de{' '}
-              <span className="font-mono text-slate-300">devices/</span>. Solo minúsculas, números y guion medio (-).
+              Es el identificador que tu placa imprime en el monitor serial al arrancar
+              (<span className="font-mono text-slate-300">Tu identificador: unoq-…</span>).
             </p>
             <p className="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1">
               <HelpCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              Se escuchará el tópico: <span className="font-mono text-emerald-400 font-semibold break-all">devices/{sanitized || '{nombre}'}/#</span>
+              Se escuchará el tópico: <span className="font-mono text-emerald-400 font-semibold break-all">devices/{sanitized || '{id-dispositivo}'}/#</span>
             </p>
           </div>
 
           {/* Quick Presets */}
           <div>
             <span className="block text-[11px] font-medium text-slate-400 mb-1.5 uppercase tracking-wider">
-              Tópico de Prueba Disponible:
+              Dispositivo de prueba disponible:
             </span>
             <div className="grid grid-cols-2 gap-2">
               {presets.map((p) => (

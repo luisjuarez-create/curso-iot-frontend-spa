@@ -1,5 +1,5 @@
 import React from 'react'
-import { Cpu, Activity, BookOpen } from 'lucide-react'
+import { Cpu, Activity, BookOpen, Terminal } from 'lucide-react'
 import { BrandLogos } from './BrandLogos.jsx'
 
 export function Header({
@@ -10,6 +10,7 @@ export function Header({
   packetCount,
   onOpenDeviceModal,
   onOpenHelp,
+  onOpenMqttClient,
 }) {
   const renderStatusBadge = () => {
     switch (deviceStatus) {
@@ -66,7 +67,7 @@ export function Header({
         <button
           onClick={onOpenDeviceModal}
           className="flex items-center gap-2 bg-slate-800/80 border border-slate-700/80 rounded-xl px-2.5 py-1 shadow-inner text-slate-200 hover:bg-slate-700/80 hover:border-emerald-500/50 hover:text-white active:scale-[0.98] transition cursor-pointer min-w-0"
-          title="Cambiar Tópico"
+          title="Cambiar dispositivo"
         >
           <Cpu className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
           <span className="text-xs font-mono font-semibold truncate max-w-[150px] sm:max-w-[260px] lg:max-w-[140px] xl:max-w-[220px]">
@@ -81,6 +82,15 @@ export function Header({
             <Activity className="w-3.5 h-3.5 text-cyan-400" />
             <span>{packetCount} msgs</span>
           </div>
+
+          <button
+            onClick={onOpenMqttClient}
+            className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800/60 hover:bg-slate-700/80 px-2.5 py-1.5 rounded-lg border border-slate-700/80 hover:border-emerald-500/50 transition"
+            title="Cliente MQTT: suscríbete a tópicos y ve los mensajes en crudo"
+          >
+            <Terminal className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="hidden sm:inline lg:hidden xl:inline">Cliente MQTT</span>
+          </button>
 
           <button
             onClick={onOpenHelp}

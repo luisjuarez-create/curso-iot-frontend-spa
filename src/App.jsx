@@ -8,16 +8,18 @@ import { WidgetSettingsModal } from './components/WidgetSettingsModal.jsx'
 import { MobileVariablesDrawer } from './components/MobileVariablesDrawer.jsx'
 import { useMqtt } from './hooks/useMqtt.js'
 import { DEFAULT_COLORS } from './lib/widgetSettings.js'
+import { SECURE_BROKER_URL, INSECURE_BROKER_URL } from './lib/mqttBroker.js'
 import { HelpHub } from './help/HelpHub.jsx'
-import { useHashRoute, helpHash, navigate } from './help/hashRoute.js'
+import { useHashRoute, helpHash, navigate, MQTT_CLIENT_HASH } from './help/hashRoute.js'
+import { MqttClientPage } from './mqtt-client/MqttClientPage.jsx'
 import { Layers, Plus, Radio } from 'lucide-react'
 
 export default function App() {
   const route = useHashRoute()
   // Device & Broker Config (reads environment variables with fallbacks)
   const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:'
-  const defaultSecureBroker = 'wss://curso-iot-broker-100-48-65-94.sslip.io'
-  const defaultInsecureBroker = 'ws://100.48.65.94:9001'
+  const defaultSecureBroker = SECURE_BROKER_URL
+  const defaultInsecureBroker = INSECURE_BROKER_URL
 
   const defaultBroker = import.meta.env.VITE_MQTT_BROKER_URL || (isHttps ? defaultSecureBroker : defaultInsecureBroker)
 
@@ -60,7 +62,7 @@ export default function App() {
   }, [widgets])
 
   // MQTT Hook
-  const { status, deviceStatus, lastSeenText, variables, packetCount } = useMqtt(brokerUrl, deviceId)
+  const { status, deviceStatus, lastSeenText, variables, packetCount, publishCommand } = useMqtt(brokerUrl, deviceId)
 
   // Handlers
   const handleSaveDevice = ({ deviceId: newId, brokerUrl: newBroker }) => {
@@ -79,11 +81,15 @@ export default function App() {
       level_bar: 'NIVEL / BARRA',
       status_indicator: 'ESTADO / ALERTA',
       bar_chart: 'HISTOGRAMA DE BARRAS',
+      switch: 'INTERRUPTOR',
+      color_picker: 'COLOR RGB',
+      led_matrix: 'MATRIZ LED',
     }
 
     const defaultSpans = {
       line_chart: 2,
       bar_chart: 2,
+      led_matrix: 2,
       numeric: 1,
       gauge: 1,
       level_bar: 1,
@@ -96,7 +102,7 @@ export default function App() {
       title: titles[widgetType] || 'NUEVO WIDGET',
       variableKey: null,
       colSpan: defaultSpans[widgetType] || 1,
-      rowSpan: 1,
+      rowSpan: widgetType === 'led_matrix' ? 2 : 1,
       settings: {
         variableType: 'generic',
         unit: '',
@@ -161,6 +167,10 @@ export default function App() {
     return <HelpHub guideId={route.guideId} stepId={route.stepId} onExit={() => navigate('#/')} />
   }
 
+  if (route.view === 'mqtt') {
+    return <MqttClientPage brokerUrl={brokerUrl} onExit={() => navigate('#/')} />
+  }
+
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
       {/* Top Header */}
@@ -172,6 +182,7 @@ export default function App() {
         packetCount={packetCount}
         onOpenDeviceModal={() => setIsDeviceModalOpen(true)}
         onOpenHelp={openHelp}
+        onOpenMqttClient={() => navigate(MQTT_CLIENT_HASH)}
         onOpenMobileDrawer={() => setIsMobileDrawerOpen(true)}
         variablesCount={variablesCount}
       />
@@ -199,6 +210,8 @@ export default function App() {
           bindingVariable={bindingVariable}
           onCancelBinding={handleCancelBinding}
           onSelectForBinding={handleSelectWidgetForBinding}
+          onSendCommand={publishCommand}
+          commandsEnabled={status === 'connected' && Boolean(deviceId)}
         />
       </div>
 

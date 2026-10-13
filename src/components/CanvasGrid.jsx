@@ -14,6 +14,8 @@ export function CanvasGrid({
   bindingVariable,
   onCancelBinding,
   onSelectForBinding,
+  onSendCommand,
+  commandsEnabled,
 }) {
   const handleReorder = (draggedId, targetId) => {
     const fromIndex = widgets.findIndex((w) => w.id === draggedId)
@@ -98,8 +100,8 @@ export function CanvasGrid({
           </div>
           <h3 className="text-base font-bold text-slate-100">Lienzo Listo para Widgets</h3>
           <p className="text-xs text-slate-400 mt-1 max-w-md leading-relaxed">
-            Puedes agregar 6 tipos de visualizaciones (Numérico, Gráfica de Líneas, Medidor Gauge,
-            Barra de Nivel, Alerta LED y Barras Históricas).
+            Puedes agregar 6 indicadores (Numérico, Gráfica de Líneas, Medidor Gauge, Barra de Nivel,
+            Alerta LED y Barras Históricas) y 3 controles (Interruptor, Color RGB y Matriz LED).
           </p>
 
           <button
@@ -124,6 +126,8 @@ export function CanvasGrid({
               onOpenSettings={onOpenSettings}
               bindingVariable={bindingVariable}
               onSelectForBinding={onSelectForBinding}
+              onSendCommand={onSendCommand}
+              commandsEnabled={commandsEnabled}
             />
           ))}
         </div>

@@ -82,6 +82,19 @@ export const DEFAULT_COLORS = {
   maxColor: '#ef4444',
 }
 
+// Widgets que envían comandos a devices/<id>/cmd en vez de mostrar una variable.
+// commandKey es la clave del JSON del comando; el dispositivo confirma reportando
+// esa misma clave en su telemetría.
+export const CONTROL_WIDGETS = {
+  switch: { commandKey: 'led' },
+  color_picker: { commandKey: 'color' },
+  led_matrix: { commandKey: 'matrix' },
+}
+
+export function isControlWidget(widgetType) {
+  return widgetType in CONTROL_WIDGETS
+}
+
 export function getVariableType(id) {
   return VARIABLE_TYPES.find((t) => t.id === id) || VARIABLE_TYPES[0]
 }

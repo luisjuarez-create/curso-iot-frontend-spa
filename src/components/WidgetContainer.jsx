@@ -11,7 +11,10 @@ import {
   Droplets,
   ShieldAlert,
   BarChart2,
-  Link2
+  Link2,
+  Power,
+  Palette,
+  Grid3x3
 } from 'lucide-react'
 
 import { NumericWidgetView } from './widgets/NumericWidgetView.jsx'
@@ -20,6 +23,10 @@ import { GaugeWidget } from './widgets/GaugeWidget.jsx'
 import { LevelBarWidget } from './widgets/LevelBarWidget.jsx'
 import { StatusWidget } from './widgets/StatusWidget.jsx'
 import { BarChartWidget } from './widgets/BarChartWidget.jsx'
+import { SwitchWidget } from './widgets/SwitchWidget.jsx'
+import { ColorCommandWidget } from './widgets/ColorCommandWidget.jsx'
+import { MatrixDrawWidget } from './widgets/MatrixDrawWidget.jsx'
+import { CONTROL_WIDGETS, isControlWidget } from '../lib/widgetSettings.js'
 
 export function WidgetContainer({
   widget,
@@ -30,7 +37,10 @@ export function WidgetContainer({
   onOpenSettings,
   bindingVariable,
   onSelectForBinding,
+  onSendCommand,
+  commandsEnabled,
 }) {
+  const isControl = isControlWidget(widget.type)
   const [isDragOverVariable, setIsDragOverVariable] = useState(false)
   const [isDragOverWidget, setIsDragOverWidget] = useState(false)
   const [isDraggingSelf, setIsDraggingSelf] = useState(false)
@@ -54,11 +64,14 @@ export function WidgetContainer({
 
   // 1. MANEJO DE DRAG & DROP DE VARIABLES Y REORDENAMIENTO
   const handleDragOver = (e) => {
+    const types = e.dataTransfer.types
+    const isWidgetDrag = types.includes('application/x-widget-id')
+    // Los widgets de control no se vinculan a variables: sin preventDefault el navegador rechaza el drop
+    if (isControl && !isWidgetDrag) return
     e.preventDefault()
 
     // dropEffect debe estar permitido por el effectAllowed del origen; si no, el navegador cancela el drop
-    const types = e.dataTransfer.types
-    if (types.includes('application/x-widget-id')) {
+    if (isWidgetDrag) {
       e.dataTransfer.dropEffect = 'move'
       if (!isDraggingSelf) setIsDragOverWidget(true)
     } else {
@@ -88,7 +101,7 @@ export function WidgetContainer({
       if (draggedWidgetId && draggedWidgetId !== widget.id) {
         onReorderWidgets(draggedWidgetId, widget.id)
       }
-    } else {
+    } else if (!isControl) {
       // Vincular variable del panel izquierdo o mobile drawer
       const varKey = iotVar || textData.replace('variable:', '')
       if (varKey) {
@@ -240,12 +253,38 @@ export function WidgetContainer({
         return <ShieldAlert className="w-3.5 h-3.5 text-emerald-400" />
       case 'bar_chart':
         return <BarChart2 className="w-3.5 h-3.5 text-teal-400" />
+      case 'switch':
+        return <Power className="w-3.5 h-3.5 text-emerald-400" />
+      case 'color_picker':
+        return <Palette className="w-3.5 h-3.5 text-fuchsia-400" />
+      case 'led_matrix':
+        return <Grid3x3 className="w-3.5 h-3.5 text-sky-400" />
       default:
         return <Hash className="w-3.5 h-3.5 text-emerald-400" />
     }
   }
 
+  const renderControlBody = () => {
+    const { commandKey } = CONTROL_WIDGETS[widget.type]
+    const props = {
+      commandKey,
+      reported: variables[commandKey]?.value,
+      enabled: commandsEnabled,
+      onSend: onSendCommand,
+    }
+    switch (widget.type) {
+      case 'switch':
+        return <SwitchWidget {...props} />
+      case 'led_matrix':
+        return <MatrixDrawWidget {...props} />
+      default:
+        return <ColorCommandWidget {...props} />
+    }
+  }
+
   const renderWidgetBody = () => {
+    if (isControl) return renderControlBody()
+
     if (!linkedVar) {
       return (
         <div className="my-auto py-5 border-2 border-dashed border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center text-center">
@@ -321,7 +360,7 @@ export function WidgetContainer({
       }`}
     >
       {/* Overlay Interactivo: Tocar para Vincular (Mobile & Desktop) */}
-      {bindingVariable && (
+      {bindingVariable && !isControl && (
         <div
           onClick={(e) => {
             e.stopPropagation()
@@ -388,13 +427,15 @@ export function WidgetContainer({
         {/* Action Controls */}
         <div className="flex items-center gap-1">
           {/* Boton de Settings para colores y max/min */}
-          <button
-            onClick={() => onOpenSettings(widget)}
-            title="Configurar tipo de variable, escala, alertas y colores"
-            className="p-1.5 rounded-lg text-slate-500 hover:text-emerald-400 hover:bg-slate-800 transition"
-          >
-            <Settings className="w-3.5 h-3.5" />
-          </button>
+          {!isControl && (
+            <button
+              onClick={() => onOpenSettings(widget)}
+              title="Configurar tipo de variable, escala, alertas y colores"
+              className="p-1.5 rounded-lg text-slate-500 hover:text-emerald-400 hover:bg-slate-800 transition"
+            >
+              <Settings className="w-3.5 h-3.5" />
+            </button>
+          )}
 
           {/* Unlink variable button */}
           {widget.variableKey && (

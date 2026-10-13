@@ -4,8 +4,12 @@ import { useState, useEffect } from 'react'
 //   #/                         -> dashboard
 //   #/ayuda                    -> primer paso de la primera guía
 //   #/ayuda/<guia>/<paso>      -> paso concreto
+//   #/cliente-mqtt             -> cliente MQTT genérico
+export const MQTT_CLIENT_HASH = '#/cliente-mqtt'
+
 export function parseHash(hash) {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean)
+  if (parts[0] === 'cliente-mqtt') return { view: 'mqtt' }
   if (parts[0] !== 'ayuda') return { view: 'dashboard' }
   return { view: 'help', guideId: parts[1] || null, stepId: parts[2] || null }
 }
