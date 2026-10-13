@@ -1,9 +1,11 @@
 import React from 'react'
 import { ExternalLink } from 'lucide-react'
 
-export function ArchifyStep({ src, title, present = true }) {
-  // El visor de archify entra directo al modo presentación con ?present=1.
-  const url = present ? `${src}?present=1` : src
+export function ArchifyStep({ src, title, present = true, theme = 'dark' }) {
+  // ?theme= tiene prioridad sobre el tema del sistema; ?present=1 entra directo al modo presentación.
+  const params = new URLSearchParams({ theme })
+  if (present) params.set('present', '1')
+  const url = `${src}?${params}`
 
   return (
     <div className="flex-1 flex flex-col min-h-0 p-2 sm:p-3 gap-2">

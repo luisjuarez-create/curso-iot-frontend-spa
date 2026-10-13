@@ -5159,15 +5159,15 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="0" data-composition-frame-label="Servidor 100.48.65.94" x="810" y="240" width="250" height="122" rx="12" class="c-region" stroke-width="1"/>
 
         <!-- Connection paths (before components for correct z-order) -->
-        <path data-edge-from="dev-esp32-test" data-edge-to="wifi" data-edge-label="WiFi" data-edge-key="0" data-edge-id="esp32-test-wifi" data-composition-points="230,146;280,146;280,299;330,299" d="M 230 146 L 272 146 Q 280 146 280 154 L 280 291 Q 280 299 288 299 L 330 299" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="dev-juan" data-edge-to="wifi" data-edge-label="WiFi" data-edge-key="1" data-edge-id="juan-wifi" data-composition-points="230,306;330,306" d="M 230 306 L 330 306" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="dev-clima" data-edge-to="wifi" data-edge-label="WiFi" data-edge-key="0" data-edge-id="clima-wifi" data-composition-points="230,146;280,146;280,299;330,299" d="M 230 146 L 272 146 Q 280 146 280 154 L 280 291 Q 280 299 288 299 L 330 299" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="dev-riego" data-edge-to="wifi" data-edge-label="WiFi" data-edge-key="1" data-edge-id="riego-wifi" data-composition-points="230,306;330,306" d="M 230 306 L 330 306" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         <path data-edge-from="dev-invernadero" data-edge-to="wifi" data-edge-label="WiFi" data-edge-key="2" data-edge-id="invernadero-wifi" data-composition-points="230,466;280,466;280,313;330,313" d="M 230 466 L 272 466 Q 280 466 280 458 L 280 321 Q 280 313 288 313 L 330 313" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         <path data-edge-from="wifi" data-edge-to="internet" data-edge-label="TCP/IP" data-edge-key="3" data-edge-id="wifi-internet" data-composition-points="490,306;580,306" d="M 490 306 L 580 306" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         <path data-edge-from="internet" data-edge-to="broker" data-edge-label="MQTT TCP :1883" data-edge-key="4" data-edge-id="internet-broker" data-composition-points="740,306;840,306" d="M 740 306 L 840 306" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
         <path data-edge-from="broker" data-edge-to="dashboard" data-edge-label="WS :9001 · WSS :443" data-edge-key="5" data-edge-id="broker-dashboard" data-composition-points="935,342;935,470" d="M 935 342 L 935 470" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
 
         <!-- Components -->
-        <g id="node-dev-esp32-test" data-node-id="dev-esp32-test" data-node-label="ESP32-test" tabindex="0" role="button" aria-label="Focus ESP32-test, devices/002130126/…, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="devices/002130126/…" data-node-context="Architecture component">
+        <g id="node-dev-clima" data-node-id="dev-clima" data-node-label="Estación de clima" tabindex="0" role="button" aria-label="Focus Estación de clima, devices/unoq-0fb74d07/…, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="devices/unoq-0fb74d07/…" data-node-context="Architecture component">
           
           <rect x="40" y="110" width="190" height="72" rx="6" class="c-mask"/>
           <rect x="40" y="110" width="190" height="72" rx="6" class="c-external" stroke-width="1.5"/>
@@ -5175,11 +5175,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="135" y="144" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">ESP32-test</text>
-        <text data-detail="context" x="135" y="160" class="t-muted" font-size="9" text-anchor="middle">devices/002130126/…</text>
+          <text data-node-label="" data-detail-anchor="" x="135" y="144" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Estación de clima</text>
+        <text data-detail="context" x="135" y="160" class="t-muted" font-size="9" text-anchor="middle">devices/unoq-0fb74d07/…</text>
         </g>
 
-        <g id="node-dev-juan" data-node-id="dev-juan" data-node-label="ESP32 de Juan" tabindex="0" role="button" aria-label="Focus ESP32 de Juan, devices/juan-perez-01/…, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="devices/juan-perez-01/…" data-node-context="Architecture component">
+        <g id="node-dev-riego" data-node-id="dev-riego" data-node-label="Sensor de riego" tabindex="0" role="button" aria-label="Focus Sensor de riego, devices/unoq-1a2b3c4d/…, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="devices/unoq-1a2b3c4d/…" data-node-context="Architecture component">
           
           <rect x="40" y="270" width="190" height="72" rx="6" class="c-mask"/>
           <rect x="40" y="270" width="190" height="72" rx="6" class="c-external" stroke-width="1.5"/>
@@ -5187,11 +5187,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="135" y="304" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">ESP32 de Juan</text>
-        <text data-detail="context" x="135" y="320" class="t-muted" font-size="9" text-anchor="middle">devices/juan-perez-01/…</text>
+          <text data-node-label="" data-detail-anchor="" x="135" y="304" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Sensor de riego</text>
+        <text data-detail="context" x="135" y="320" class="t-muted" font-size="9" text-anchor="middle">devices/unoq-1a2b3c4d/…</text>
         </g>
 
-        <g id="node-dev-invernadero" data-node-id="dev-invernadero" data-node-label="Sensor invernadero" tabindex="0" role="button" aria-label="Focus Sensor invernadero, devices/invernadero-02/…, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="devices/invernadero-02/…" data-node-context="Architecture component">
+        <g id="node-dev-invernadero" data-node-id="dev-invernadero" data-node-label="Sensor invernadero" tabindex="0" role="button" aria-label="Focus Sensor invernadero, devices/unoq-5e6f7a8b/…, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="devices/unoq-5e6f7a8b/…" data-node-context="Architecture component">
           
           <rect x="40" y="430" width="190" height="72" rx="6" class="c-mask"/>
           <rect x="40" y="430" width="190" height="72" rx="6" class="c-external" stroke-width="1.5"/>
@@ -5200,7 +5200,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
           <text data-node-label="" data-detail-anchor="" x="135" y="464" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Sensor invernadero</text>
-        <text data-detail="context" x="135" y="480" class="t-muted" font-size="9" text-anchor="middle">devices/invernadero-02/…</text>
+        <text data-detail="context" x="135" y="480" class="t-muted" font-size="9" text-anchor="middle">devices/unoq-5e6f7a8b/…</text>
         </g>
 
         <g id="node-wifi" data-node-id="wifi" data-node-label="Router WiFi" tabindex="0" role="button" aria-label="Focus Router WiFi, red local 2.4 GHz, Architecture component" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="red local 2.4 GHz" data-node-context="Architecture component">
@@ -5254,11 +5254,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         </g>
 
         <!-- Connection labels -->
-        <g data-detail="context" data-edge-from="dev-esp32-test" data-edge-to="wifi" data-edge-label="WiFi" data-edge-key="0" data-edge-id="esp32-test-wifi">
+        <g data-detail="context" data-edge-from="dev-clima" data-edge-to="wifi" data-edge-label="WiFi" data-edge-key="0" data-edge-id="clima-wifi">
           <rect x="265" y="202.5" width="30" height="14" rx="3" class="c-mask"/>
           <text x="280" y="212.5" class="t-muted" font-size="8" text-anchor="middle">WiFi</text>
         </g>
-        <g data-detail="context" data-edge-from="dev-juan" data-edge-to="wifi" data-edge-label="WiFi" data-edge-key="1" data-edge-id="juan-wifi">
+        <g data-detail="context" data-edge-from="dev-riego" data-edge-to="wifi" data-edge-label="WiFi" data-edge-key="1" data-edge-id="riego-wifi">
           <rect x="240" y="286" width="30" height="14" rx="3" class="c-mask"/>
           <text x="255" y="296" class="t-muted" font-size="8" text-anchor="middle">WiFi</text>
         </g>
@@ -5509,9 +5509,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <h3>Tópicos</h3>
         </div>
         <ul>
-          <li>&bull; Base: devices/</li>
           <li>&bull; Publica: devices/&lt;id&gt;/telemetry</li>
           <li>&bull; Estado: devices/&lt;id&gt;/status</li>
+          <li>&bull; Comandos: devices/&lt;id&gt;/cmd</li>
           <li>&bull; Dashboard escucha: devices/&lt;id&gt;/#</li>
         </ul>
       </div>
@@ -5522,9 +5522,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <h3>Identificador</h3>
         </div>
         <ul>
-          <li>&bull; Cada dispositivo usa su propio &lt;id&gt;</li>
-          <li>&bull; Solo minúsculas, números y guion</li>
-          <li>&bull; El mismo &lt;id&gt; se escribe en el dashboard</li>
+          <li>&bull; Cada placa calcula su &lt;id&gt; con su número de serie</li>
+          <li>&bull; Formato unoq-xxxxxxxx</li>
+          <li>&bull; Se lee en el monitor serial y se escribe en el dashboard</li>
         </ul>
       </div>
     </div>

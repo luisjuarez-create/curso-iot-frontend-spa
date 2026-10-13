@@ -1,4 +1,5 @@
 import { IotIntroStep } from './steps/IotIntroStep.jsx'
+import { MqttIntroStep } from './steps/MqttIntroStep.jsx'
 import { ArduinoSetupStep } from './steps/ArduinoSetupStep.jsx'
 import { PermissionsQosStep } from './steps/PermissionsQosStep.jsx'
 
@@ -12,13 +13,19 @@ export const GUIDES = [
   {
     id: 'conectar-dispositivo',
     title: 'Conectar tu dispositivo',
-    description: 'Qué es IoT, código Arduino, cómo viaja el mensaje y buenas prácticas.',
+    description: 'Qué es IoT, qué es MQTT, código Arduino, cómo viaja el mensaje y buenas prácticas.',
     steps: [
       {
         id: 'que-es-iot',
         title: '¿Qué es IoT?',
         kind: 'component',
         component: IotIntroStep,
+      },
+      {
+        id: 'que-es-mqtt',
+        title: '¿Qué es MQTT?',
+        kind: 'component',
+        component: MqttIntroStep,
       },
       {
         id: 'codigo-arduino',

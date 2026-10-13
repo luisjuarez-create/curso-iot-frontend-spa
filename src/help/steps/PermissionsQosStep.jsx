@@ -61,8 +61,8 @@ export function PermissionsQosStep() {
         <div className="grid sm:grid-cols-2 gap-3">
           <div className="p-3.5 rounded-xl border border-red-500/30 bg-red-500/5 space-y-2.5">
             <span className="text-xs font-bold text-red-300 uppercase tracking-wide">Sin permisos</span>
-            <DeviceChip name="ESP32 de Juan" value="24.3 °C" tone="red" />
-            <DeviceChip name="ESP32 de Ana" value="18.9 °C" tone="red" />
+            <DeviceChip name="Sensor invernadero" value="24.3 °C" tone="red" />
+            <DeviceChip name="Sensor bodega" value="18.9 °C" tone="red" />
             <div className="pl-1">
               <span className="text-[11px] text-slate-400">ambos publican en</span>
               <Topic tone="red">devices/sala-1/telemetry</Topic>
@@ -76,16 +76,16 @@ export function PermissionsQosStep() {
           <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 space-y-2.5">
             <span className="text-xs font-bold text-emerald-300 uppercase tracking-wide">Con permisos</span>
             <div className="space-y-1">
-              <DeviceChip name="ESP32 de Juan" value="24.3 °C" tone="emerald" />
-              <Topic>devices/juan/telemetry</Topic>
+              <DeviceChip name="Sensor invernadero" value="24.3 °C" tone="emerald" />
+              <Topic>devices/invernadero/telemetry</Topic>
             </div>
             <div className="space-y-1">
-              <DeviceChip name="ESP32 de Ana" value="18.9 °C" tone="emerald" />
-              <Topic>devices/ana/telemetry</Topic>
+              <DeviceChip name="Sensor bodega" value="18.9 °C" tone="emerald" />
+              <Topic>devices/bodega/telemetry</Topic>
             </div>
             <div className="flex items-start gap-2 text-xs text-slate-300">
               <ShieldCheck className="w-4 h-4 text-emerald-300 shrink-0 mt-0.5" />
-              <span>Si Ana intenta escribir en el tópico de Juan, el broker lo rechaza.</span>
+              <span>Si el sensor de la bodega intenta escribir en el tópico del invernadero, el broker lo rechaza.</span>
             </div>
           </div>
         </div>

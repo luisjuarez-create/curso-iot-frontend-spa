@@ -7,7 +7,7 @@ import { Section } from '../Section.jsx'
 
 const FLOW = [
   { icon: Thermometer, title: 'Sensor', text: 'Mide temperatura, humedad, luz…' },
-  { icon: Cpu, title: 'Microcontrolador', text: 'ESP32: lee el sensor y arma el mensaje' },
+  { icon: Cpu, title: 'Microcontrolador', text: 'Lee el sensor y arma el mensaje' },
   { icon: Wifi, title: 'Red', text: 'WiFi lleva el dato a internet' },
   { icon: Radio, title: 'Broker MQTT', text: 'Recibe y reparte los mensajes' },
   { icon: Monitor, title: 'Aplicación', text: 'Dashboard, alertas, base de datos' },
@@ -72,7 +72,8 @@ export function IotIntroStep() {
 
       <Section icon={Cpu} title="Dispositivos embebidos">
         <p className="text-sm text-slate-300 leading-relaxed">
-          Un dispositivo embebido es una pequeña computadora dedicada a una sola tarea, como el ESP32.
+          Un dispositivo embebido es una pequeña computadora dedicada a una sola tarea, como el sensor de un invernadero
+          o una estación de clima.
           Su ventaja es que es barato y pequeño, pero trabaja con límites:
         </p>
         <div className="grid sm:grid-cols-3 gap-2.5">
