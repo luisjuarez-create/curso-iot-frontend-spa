@@ -13,7 +13,7 @@ export const GUIDES = [
   {
     id: 'conectar-dispositivo',
     title: 'Conectar tu dispositivo',
-    description: 'Qué es IoT, qué es MQTT, código Arduino, cómo viaja el mensaje y buenas prácticas.',
+    description: 'Qué es IoT, qué es MQTT, cómo viaja el mensaje, buenas prácticas y código Arduino.',
     steps: [
       {
         id: 'que-es-iot',
@@ -28,12 +28,6 @@ export const GUIDES = [
         component: MqttIntroStep,
       },
       {
-        id: 'codigo-arduino',
-        title: 'Código Arduino',
-        kind: 'component',
-        component: ArduinoSetupStep,
-      },
-      {
         id: 'enlace-mqtt',
         title: 'Cómo viaja el mensaje',
         kind: 'archify',
@@ -44,6 +38,12 @@ export const GUIDES = [
         title: 'Permisos y QoS',
         kind: 'component',
         component: PermissionsQosStep,
+      },
+      {
+        id: 'codigo-arduino',
+        title: 'Código Arduino',
+        kind: 'component',
+        component: ArduinoSetupStep,
       },
     ],
   },
