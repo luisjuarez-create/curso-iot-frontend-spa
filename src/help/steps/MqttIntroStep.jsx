@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  Radio, Cpu, Monitor, Database, Send, Inbox, ArrowRight, Newspaper, Hash, Terminal,
+  Radio, Cpu, Monitor, Database, Send, Inbox, ArrowRight, Newspaper, Hash, Terminal, BarChart3, ExternalLink,
 } from 'lucide-react'
 import { Section } from '../Section.jsx'
 import { MQTT_CLIENT_HASH } from '../hashRoute.js'
@@ -23,6 +23,23 @@ const ROLES = [
     title: 'Suscriptor',
     text: 'Un cliente que pide recibir lo que llegue a un tópico. Ej.: el dashboard.',
     tone: 'cyan',
+  },
+]
+
+const ADOPTION_2024 = [
+  { name: 'MQTT', value: 56, highlight: true },
+  { name: 'HTTP', value: 32 },
+  { name: 'TCP/IP', value: 30 },
+]
+
+const SOURCES = [
+  {
+    label: 'Eclipse Foundation, IoT & Embedded Developer Survey Report 2024',
+    href: 'https://5413615.fs1.hubspotusercontent-na1.net/hubfs/5413615/Eclipse%20IoT%20White%20Papers%20and%20Case%20Studies/IoT%20and%20Embedded%20Survey%20Report%202024.pdf',
+  },
+  {
+    label: 'Eclipse Foundation, 2025 IoT and Embedded Survey Report (p. 23)',
+    href: 'https://outreach.eclipse.foundation/hubfs/Eclipse%20IoT%20White%20Papers%20and%20Case%20Studies/2025%20IoT%20and%20Embedded%20Survey%20Report.pdf',
   },
 ]
 
@@ -89,6 +106,46 @@ export function MqttIntroStep() {
         viaja sobre TCP/IP. Está pensado para dispositivos pequeños y redes inestables: cada mensaje lleva muy poca
         información extra y la conexión se mantiene abierta para enviar y recibir al instante.
       </p>
+
+      <Section icon={BarChart3} title="¿Qué tan usado es?">
+        <p className="text-sm text-slate-300 leading-relaxed">
+          En la encuesta anual de la Eclipse Foundation a desarrolladores de IoT y sistemas embebidos, MQTT es el
+          protocolo de comunicación más usado. En 2024, el 56% de los encuestados respondió que lo usa
+          (podían elegir hasta tres protocolos):
+        </p>
+        <div className="space-y-2">
+          {ADOPTION_2024.map((p) => (
+            <div key={p.name} className="grid grid-cols-[64px_1fr_40px] items-center gap-3">
+              <span className={`text-xs font-semibold ${p.highlight ? 'text-emerald-300' : 'text-slate-300'}`}>{p.name}</span>
+              <div className="h-2.5 rounded-full bg-slate-800 overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${p.highlight ? 'bg-emerald-400' : 'bg-slate-500'}`}
+                  style={{ width: `${p.value}%` }}
+                />
+              </div>
+              <span className="text-xs font-mono text-slate-300 text-right">{p.value}%</span>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-slate-400 leading-relaxed">
+          En la edición 2025 se repite la tendencia: MQTT v5 (28%) y MQTT v3 (27%) son los dos protocolos más usados
+          en despliegues IoT y edge.
+        </p>
+        <div className="space-y-1">
+          {SOURCES.map((s) => (
+            <a
+              key={s.href}
+              href={s.href}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-cyan-300 transition"
+            >
+              <ExternalLink className="w-3 h-3 shrink-0" />
+              Fuente: {s.label}
+            </a>
+          ))}
+        </div>
+      </Section>
 
       <Section icon={Cpu} title="Todos son clientes">
         <p className="text-sm text-slate-300 leading-relaxed">
